@@ -1,0 +1,34 @@
+{
+	"manifest_version": 2,
+	"name": "식물이 끌린다, 인식",
+	"version": "1.0.0",
+
+	"description": "식물이 끌린다, 인식(引植)",
+	"icons": {
+		"16": "icon-16.png",
+		"32": "icon-48.png",
+		"48": "icon-48.png",
+		"128": "icon-128.png"
+	},
+
+	"options_page": "options.html",
+
+	"background": {
+		"scripts": ["background.js"]
+	},
+	
+	"content_scripts": [
+		{
+			"matches": ["https://www.youtube.com/*"],
+			"js": ["page.js"],
+			"css": ["style.css"],
+			"run_at": "document_end"
+		}
+	],
+
+	"permissions": [
+		"https://www.youtube.com/*",
+		"webNavigation",
+		"storage"
+	]
+}

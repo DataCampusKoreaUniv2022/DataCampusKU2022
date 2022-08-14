@@ -1,0 +1,5 @@
+# ninja log v5
+1	6574	6820315455668136	D:/OneDrive - 고려대학교/2022 데청캠/DataCampusKU2022/DINO/models/dino/ops/build/temp.win-amd64-3.7/Release/OneDrive - 고려대학교/2022 데청캠/DataCampusKU2022/DINO/models/dino/ops/src/cpu/ms_deform_attn_cpu.obj	69892aa9863d02f2
+19	16355	6820315553498465	D:/OneDrive - 고려대학교/2022 데청캠/DataCampusKU2022/DINO/models/dino/ops/build/temp.win-amd64-3.7/Release/OneDrive - 고려대학교/2022 데청캠/DataCampusKU2022/DINO/models/dino/ops/src/vision.obj	d65edd6de4376964
+1	7491	6820327410067368	D:/OneDrive - 고려대학교/2022 데청캠/DataCampusKU2022/DINO/models/dino/ops/build/temp.win-amd64-3.7/Release/OneDrive - 고려대학교/2022 데청캠/DataCampusKU2022/DINO/models/dino/ops/src/cpu/ms_deform_attn_cpu.obj	2eee2b66f2e77337
+157	16409	6820327499230374	D:/OneDrive - 고려대학교/2022 데청캠/DataCampusKU2022/DINO/models/dino/ops/build/temp.win-amd64-3.7/Release/OneDrive - 고려대학교/2022 데청캠/DataCampusKU2022/DINO/models/dino/ops/src/vision.obj	ae7a8c134f3350c3

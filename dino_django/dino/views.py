@@ -73,4 +73,4 @@ def index(request):
         'image_uri': image_uri,
         'predicted_label': predicted_label,
     }
-    return render(request, 'image_classification/index.html', context)
+    return render(request, 'dino/index.html', context)

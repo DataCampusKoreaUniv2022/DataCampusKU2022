@@ -11,8 +11,8 @@ from PIL import Image
 from django.conf import settings
 
 
-models = models.densenet121(pretrained=True)
-models.eval()
+model = models.densenet121(pretrained=True)
+model.eval()
 
 json_path = os.path.join(settings.STATIC_ROOT, "imagenet_class_index.json")
 imagenet_mapping = json.load(open(json_path))
@@ -35,7 +35,7 @@ def get_prediction(image_bytes):
     _, y_hat = outputs.max(1)
     predicted_idx = str(y_hat.item())
     class_name, human_label = imagenet_mapping[predicted_idx]
-    return 
+    return human_label
     
 
 import base64

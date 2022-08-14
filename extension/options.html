@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>인식 옵션</title>
+<style>
+body {
+	margin: 25px;
+	font-size: 14px;
+}
+code {
+	background: #ddd;
+	padding: 5px 10px;
+	font-size: 16px;
+	border-radius: 3px;
+}
+h2 {
+	margin: 25px 0 10px;
+}
+h3 {
+	margin: 25px 0 5px;
+}
+label {
+	display: block;
+	padding: 10px;
+}
+label:hover {
+	background: #f7f7f7;
+}
+#PlaybackSpeedHelp {
+	margin: 0 0 0 45px;
+}
+#PlaybackSpeedHelp p {
+	display: inline-block;
+	margin: 0 10px 5px 0;
+	min-width: 60px;
+}
+</style>
+</head>
+<body>
+<h1>식물이 끌린다, 인식(引植)</h1>
+<p>Forked from Screenshot Youtube by <a href="http://futuremillennium.com" target="_blank">Zdeněk Gromnica a.k.a FutureMillennium</a></p>
+
+<h2>Settings</h2>
+
+<p><label><input type="checkbox" id="ScreenshotKeyCheck" /> <code>P</code> keyboard shortcut to take screenshot</label></p>
+<p><label>Image format to use:
+	<select id="ScreenshotFileFormat">
+		<option value="png" >png </option>
+		<option value="jpeg">jpeg</option>
+		<option value="webp">webp</option>
+	</select>
+</label></p>
+
+<h3>Save to file or clipboard</h3>
+<p>
+    <label><input type="radio" name="ScreenshotFunctionalityCheck" value="0" id="SFCSave"> Save to file</label>
+    <label><input type="radio" name="ScreenshotFunctionalityCheck" value="1" id="SFCCopy"> Copy to clipboard</label>
+    <label><input type="radio" name="ScreenshotFunctionalityCheck" value="2" id="SFCBoth"> Both</label>
+</p>
+
+<h2>Extra features</h2>
+<p><label><input type="checkbox" id="PlaybackSpeedButtonsCheck" /> Playback rate buttons</label></p>
+
+<div id="PlaybackSpeedHelp" hidden>
+	<p>Keyboard shortcuts:</p>
+	<p><code>Q</code> 1×</p>
+	<!-- <p><code>A</code> 1.25×</p> -->
+	<p><code>S</code> 1.5×</p>
+	<!-- <p><code>D</code> 1.75×</p> -->
+	<p><code>W</code> 2×</p>
+	<p><code>E</code> 2.5×</p>
+	<p><code>R</code> 3×</p>
+</div>
+
+<script src="options.js"></script>
+</body>
+</html>

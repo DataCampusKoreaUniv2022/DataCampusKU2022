@@ -82,7 +82,6 @@ def pinterest(request) :
 
 def api(request):
     if request.method == 'POST':
-        print(dir(request))
         file = request.FILES['file']
         img_bytes = file.read()
         class_name = get_prediction(image_bytes=img_bytes)

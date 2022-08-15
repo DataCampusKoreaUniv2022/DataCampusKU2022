@@ -7,4 +7,5 @@ app_name = 'dino'
 urlpatterns = [
     # two paths: with or without given image
     path('', views.index, name='index'),
+    path('pinterest', views.pinterest, name = 'pinterest')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

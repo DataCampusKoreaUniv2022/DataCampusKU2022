@@ -74,3 +74,6 @@ def index(request):
         'predicted_label': predicted_label,
     }
     return render(request, 'dino/index.html', context)
+
+def pinterest(request) :
+    return render(request, 'dino/pinterest.html')

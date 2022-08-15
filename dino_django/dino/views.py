@@ -9,6 +9,7 @@ from torchvision import models
 from torchvision import transforms
 from PIL import Image
 from django.conf import settings
+from django.http import JsonResponse
 
 
 model = models.densenet121(pretrained=True)
@@ -77,3 +78,12 @@ def index(request):
 
 def pinterest(request) :
     return render(request, 'dino/pinterest.html')
+
+
+def api(request):
+    if request.method == 'POST':
+        print(dir(request))
+        file = request.files['file']
+        img_bytes = file.read()
+        class_name = get_prediction(image_bytes=img_bytes)
+        return JsonResponse({'class_name': class_name})

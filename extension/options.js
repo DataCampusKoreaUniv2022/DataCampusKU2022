@@ -1,9 +1,7 @@
 'use strict';
 
-chrome.storage.sync.get(['screenshotKey', 'playbackSpeedButtons', 'screenshotFunctionality', 'screenshotFileFormat'], function(result) {
+chrome.storage.sync.get(['screenshotKey', 'screenshotFunctionality', 'screenshotFileFormat'], function(result) {
 	ScreenshotKeyCheck.checked = result.screenshotKey;
-	PlaybackSpeedButtonsCheck.checked = result.playbackSpeedButtons;
-	PlaybackSpeedButtonsChange();
 
 	if (result.screenshotFunctionality === undefined) {
 		chrome.storage.sync.set({ screenshotFunctionality: 2 });
@@ -32,15 +30,6 @@ SFCCopy.oninput = function() {
 SFCBoth.oninput = function() {
 	ScreenshotFunctionalitySet(this.value);
 };
-
-PlaybackSpeedButtonsCheck.oninput = function() {
-	chrome.storage.sync.set({'playbackSpeedButtons': this.checked});
-	PlaybackSpeedButtonsChange();
-};
-
-function PlaybackSpeedButtonsChange() {
-	PlaybackSpeedHelp.hidden = !PlaybackSpeedButtonsCheck.checked;
-}
 
 ScreenshotFileFormat.onchange = function() {
 	chrome.storage.sync.set({'screenshotFileFormat': this.value});

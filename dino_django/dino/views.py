@@ -83,12 +83,10 @@ def pinterest(request) :
 import urllib
 def api(request):
     if request.method == 'POST':
-        print(request.body.decode()[:100])
         # print(request.FILES)
         # file = request.FILES['file']
         file = urllib.request.urlopen(request.body.decode())
         img_bytes = file.read()
-        # image = Image.open(io.BytesIO(img_bytes))
-        # img_bytes = image.convert('RGB')
         class_name = get_prediction(image_bytes=img_bytes)
+        print(class_name)
         return JsonResponse({'class_name': class_name})

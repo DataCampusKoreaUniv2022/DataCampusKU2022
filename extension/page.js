@@ -54,57 +54,42 @@ function CaptureScreenshot() {
 	canvas.height = player.videoHeight;
 	canvas.getContext('2d').drawImage(player, 0, 0, canvas.width, canvas.height);
 
-	var downloadLink = document.createElement("a");
-	downloadLink.download = title;
+	// var downloadLink = document.createElement("a");
+	// downloadLink.download = title;
 
-	function DownloadBlob(blob) {
-		downloadLink.href = URL.createObjectURL(blob);
-		downloadLink.click();
-	}
+	// function DownloadBlob(blob) {
+	// 	downloadLink.href = URL.createObjectURL(blob);
+	// 	downloadLink.click();
+	// }
 
-	async function ClipboardBlob(blob) {
-		const clipboardItemInput = new ClipboardItem({ "image/png": blob });
-		await navigator.clipboard.write([clipboardItemInput]);
-	}
+	// async function ClipboardBlob(blob) {
+	// 	const clipboardItemInput = new ClipboardItem({ "image/png": blob });
+	// 	await navigator.clipboard.write([clipboardItemInput]);
+	// }
 
-	// If clipboard copy is needed generate png (clipboard only supports png)
-	if (screenshotFunctionality == 1 || screenshotFunctionality == 2) {
-		canvas.toBlob(async function (blob) {
-			await ClipboardBlob(blob);
-			// Also download it if it's needed and it's in the correct format
-			if (screenshotFunctionality == 2 && screenshotFormat === 'png') {
-				DownloadBlob(blob);
-			}
-		}, 'image/png');
-	}
-
-	// Create and download image in the selected format if needed
-	if (screenshotFunctionality == 0 || (screenshotFunctionality == 2 && screenshotFormat !== 'png')) {
-		canvas.toBlob(async function (blob) {
-			DownloadBlob(blob);
-		}, 'image/' + screenshotFormat);
-	}
-
-	// canvas.toBlob(async function (blob) {
-	// 	chrome.runtime.sendMessage(
-	// 		{image: blob},
-	// 		function(response){
-	// 			alert('123');
+	// // If clipboard copy is needed generate png (clipboard only supports png)
+	// if (screenshotFunctionality == 1 || screenshotFunctionality == 2) {
+	// 	canvas.toBlob(async function (blob) {
+	// 		await ClipboardBlob(blob);
+	// 		// Also download it if it's needed and it's in the correct format
+	// 		if (screenshotFunctionality == 2 && screenshotFormat === 'png') {
+	// 			DownloadBlob(blob);
 	// 		}
-	// 	)
-	// })
-	var imgURL = canvas.toDataURL("image/jpeg", 1.0);
-	var blobBin = atob(imgURL.split(',')[1]);
-	var imgArray = [];
-	for (var i=0; i<blobBin.length; i++) {
-		imgArray.push(blobBin.charCodeAt(i));
-	}
-	var imgFile = new Blob([new Uint8Array(imgArray)], {type: 'image/png'});
+	// 	}, 'image/png');
+	// }
 
+	// // Create and download image in the selected format if needed
+	// if (screenshotFunctionality == 0 || (screenshotFunctionality == 2 && screenshotFormat !== 'png')) {
+	// 	canvas.toBlob(async function (blob) {
+	// 		DownloadBlob(blob);
+	// 	}, 'image/' + screenshotFormat);
+	// }
+
+	var imgURL = canvas.toDataURL("image/jpeg", 1.0);
 	chrome.runtime.sendMessage(
 		{image: imgURL},
 		function(response){
-			alert(imgURL)
+			alert(response.farewell.class_name)
 		}
 	);
 }

@@ -6,10 +6,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(function(data) {
 
 var serverhost = 'http://127.0.0.1:8000/api';
 chrome.runtime.onMessage.addListener(
-	function(request, sender, sendResponse){
-		var formData = new FormData()
-		formData.append('file', request.image)
-
+	function(request, sender, sendResponse) {
 		fetch(serverhost, {
 			method: 'POST',
 			body: request.image

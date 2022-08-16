@@ -80,9 +80,13 @@ def pinterest(request) :
     return render(request, 'dino/pinterest.html')
 
 
+import urllib
 def api(request):
     if request.method == 'POST':
-        file = request.FILES['file']
+        # print(request.FILES)
+        # file = request.FILES['file']
+        file = urllib.request.urlopen(request.body.decode())
         img_bytes = file.read()
         class_name = get_prediction(image_bytes=img_bytes)
+        print(class_name)
         return JsonResponse({'class_name': class_name})

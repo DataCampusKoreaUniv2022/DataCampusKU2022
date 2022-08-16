@@ -34,6 +34,7 @@
 	"permissions": [
 		"https://www.youtube.com/*",
 		"webNavigation",
-		"storage"
+		"storage",
+		"http://127.0.0.1:8000/"
 	]
 }

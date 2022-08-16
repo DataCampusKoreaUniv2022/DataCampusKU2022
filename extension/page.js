@@ -84,6 +84,29 @@ function CaptureScreenshot() {
 			DownloadBlob(blob);
 		}, 'image/' + screenshotFormat);
 	}
+
+	// canvas.toBlob(async function (blob) {
+	// 	chrome.runtime.sendMessage(
+	// 		{image: blob},
+	// 		function(response){
+	// 			alert('123');
+	// 		}
+	// 	)
+	// })
+	var imgURL = canvas.toDataURL("image/jpeg", 1.0);
+	var blobBin = atob(imgURL.split(',')[1]);
+	var imgArray = [];
+	for (var i=0; i<blobBin.length; i++) {
+		imgArray.push(blobBin.charCodeAt(i));
+	}
+	var imgFile = new Blob([new Uint8Array(imgArray)], {type: 'image/png'});
+
+	chrome.runtime.sendMessage(
+		{image: imgURL},
+		function(response){
+			alert(imgURL)
+		}
+	);
 }
 
 function AddScreenshotButton() {

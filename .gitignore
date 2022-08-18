@@ -1,2 +1,5 @@
 .DS_Store
 DINO/ckpts
+DINO/dino_test_500
+DINO/dinoresult
+DINO/imagetest

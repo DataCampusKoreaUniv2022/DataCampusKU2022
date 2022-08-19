@@ -3,3 +3,6 @@ DINO/ckpts/*
 DINO/dino_test_500
 DINO/dinoresult
 DINO/imagetest
+DINO/__pycache__/*.pyc
+dino_django/dino/__pycache__/*.pyc
+dino_django/dino_django/__pycache__/*.pyc

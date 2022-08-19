@@ -89,7 +89,26 @@ function CaptureScreenshot() {
 	chrome.runtime.sendMessage(
 		{image: imgURL},
 		function(response){
-			alert(response.farewell.class_name)
+			// alert(response.farewell.scores)
+			let newDiv = document.createElement('div');
+			const imgToAdd = document.createElement('img');
+			imgToAdd.src = response.farewell.image;
+			newDiv.append(imgToAdd);
+
+			let whereToAdd = document.getElementById('player-container-outer');
+			let ytpPlayer = document.getElementById('player-container-inner');
+			let htmlPlayer = document.getElementById('html5-video-player');
+
+			
+			ytpPlayer.style.display = 'none';
+			whereToAdd.prepend(newDiv);
+
+			setTimeout(() => {
+				alert('짜잔');
+				newDiv.style.display = 'none';
+				ytpPlayer.style.display = '';
+			}, 3000);
+
 		}
 	);
 }

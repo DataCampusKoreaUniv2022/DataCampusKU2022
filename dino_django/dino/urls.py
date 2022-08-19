@@ -8,5 +8,6 @@ urlpatterns = [
     # two paths: with or without given image
     path('', views.index, name='index'),
     path('pinterest', views.pinterest, name = 'pinterest'),
-    path('api', views.api, name='api')
+    path('api', views.api, name='api'),
+    path('new', views.new, name = 'new')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

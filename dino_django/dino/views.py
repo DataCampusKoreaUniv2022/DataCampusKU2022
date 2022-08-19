@@ -79,6 +79,9 @@ def index(request):
 def pinterest(request) :
     return render(request, 'dino/pinterest.html')
 
+def new(request) :
+    return render(request,'dino/new.html')
+
 
 import urllib
 def api(request):

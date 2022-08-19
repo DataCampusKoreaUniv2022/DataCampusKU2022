@@ -96,7 +96,7 @@ function CaptureScreenshot() {
 			newDiv.append(imgToAdd);
 
 			let whereToAdd = document.getElementById('player-container-outer');
-			let ytpPlasyer = document.getElementById('player-container-inner');
+			let ytpPlayer = document.getElementById('player-container-inner');
 			let htmlPlayer = document.getElementById('html5-video-player');
 
 			

@@ -85,8 +85,16 @@ def api(request):
     if request.method == 'POST':
         # print(request.FILES)
         # file = request.FILES['file']
-        file = urllib.request.urlopen(request.body.decode())
+        imageURL = request.body.decode()
+        file = urllib.request.urlopen(imageURL)
         img_bytes = file.read()
         class_name = get_prediction(image_bytes=img_bytes)
         print(class_name)
-        return JsonResponse({'class_name': class_name})
+
+        sendJson = {}
+        sendJson['image'] = imageURL
+        sendJson['scores'] = [0.5, 0.3, 0.1]
+        sendJson['labels'] = [class_name, class_name, class_name]
+        sendJson['boxes'] = [[0.5, 0.5, 0.5, 0.5], [0.2, 0.3, 0.4, 0.5], [0.1, 0.3, 0.5, 0.7]]
+
+        return JsonResponse(sendJson)

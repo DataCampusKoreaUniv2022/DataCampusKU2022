@@ -91,14 +91,18 @@ function CaptureScreenshot() {
 		function(response){
 			// alert(response.farewell.scores)
 			let newDiv = document.createElement('div');
-			const imgToAdd = document.createElement('img');
+			let imgToAdd = document.createElement('img');
 			imgToAdd.src = response.farewell.image;
-			newDiv.append(imgToAdd);
 
 			let whereToAdd = document.getElementById('player-container-outer');
 			let ytpPlayer = document.getElementById('player-container-inner');
-			let htmlPlayer = document.getElementById('html5-video-player');
+			let htmlPlayer = document.getElementsByClassName("video-stream html5-main-video")[0]
 
+			let getWidth = htmlPlayer.style.width
+			let getHeight = htmlPlayer.style.height
+			imgToAdd.style.width = getWidth
+			imgToAdd.style.height = getHeight
+			newDiv.append(imgToAdd);
 			
 			ytpPlayer.style.display = 'none';
 			whereToAdd.prepend(newDiv);

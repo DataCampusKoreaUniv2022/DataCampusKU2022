@@ -14,6 +14,8 @@ chrome.runtime.onMessage.addListener(
 		.then(response => sendResponse({farewell: response}))
 		.catch(error => console.log(error))
 
+		chrome.tabs.create({url: "html5up-miniport/index.html"})
+
 		return true;
 	}
 );

@@ -27,8 +27,13 @@
 			"matches": ["https://www.youtube.com/*"],
 			"js": ["page.js"],
 			"css": ["style.css"],
-			"run_at": "document_end"
+			"run_at": "document_end",
+			"all_frames": true
 		}
+	],
+
+	"web_accessible_resources": [
+		"xray.html"
 	],
 
 	"permissions": [

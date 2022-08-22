@@ -40,6 +40,7 @@
 		"https://www.youtube.com/*",
 		"webNavigation",
 		"storage",
+		"unlimitedStorage",
 		"http://127.0.0.1:8000/"
 	]
 }

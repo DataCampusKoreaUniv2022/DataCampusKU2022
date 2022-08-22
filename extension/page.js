@@ -89,6 +89,8 @@ function CaptureScreenshot() {
 	chrome.runtime.sendMessage(
 		{image: imgURL},
 		function(response){
+			chrome.storage.local.set({image: response.farewell.image});
+
 			// alert(response.farewell.scores)
 			let newDiv = document.createElement('div');
 
@@ -102,10 +104,17 @@ function CaptureScreenshot() {
 			let ytpPlayer = document.getElementById('player-container-inner');
 			let htmlPlayer = document.getElementsByClassName("video-stream html5-main-video")[0]
 
-			let getWidth = htmlPlayer.style.width
-			let getHeight = htmlPlayer.style.height
-			iframeToAdd.style.width = getWidth
-			iframeToAdd.style.height = getHeight
+			let getWidth = htmlPlayer.style.width;
+			let getHeight = htmlPlayer.style.height;
+			iframeToAdd.style.width = getWidth;
+			iframeToAdd.style.height = getHeight;
+			// iframeToAdd.frameBorder = '0';
+			iframeToAdd.marginWidth = '0';
+			iframeToAdd.marginHeight = '0';
+			iframeToAdd.scrolling = 'no';
+
+			chrome.storage.local.set({width: getWidth, height: getHeight});
+
 			newDiv.append(iframeToAdd);
 			
 			ytpPlayer.style.display = 'none';

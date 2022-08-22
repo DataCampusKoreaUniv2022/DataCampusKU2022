@@ -95,7 +95,7 @@ function CaptureScreenshot() {
 			let newDiv = document.createElement('div');
 
 			let iframeToAdd = document.createElement('iframe');
-			let xrayHtmlUrl = chrome.runtime.getURL('xray.html');
+			let xrayHtmlUrl = chrome.runtime.getURL('xray/index.html');
 			iframeToAdd.src = xrayHtmlUrl;
 			// let imgToAdd = document.createElement('img');
 			// imgToAdd.src = response.farewell.image;
@@ -111,7 +111,7 @@ function CaptureScreenshot() {
 			// iframeToAdd.frameBorder = '0';
 			iframeToAdd.marginWidth = '0';
 			iframeToAdd.marginHeight = '0';
-			iframeToAdd.scrolling = 'no';
+			// iframeToAdd.scrolling = 'no';
 
 			chrome.storage.local.set({width: getWidth, height: getHeight});
 

@@ -1,4 +1,4 @@
-chrome.storage.local.get(['image', 'width', 'height'], function(result) {
+chrome.storage.local.get(['image', 'labels', 'width', 'height'], function(result) {
     let image = document.createElement('img');
     image.src = result.image;
     image.style.width = result.width;
@@ -13,4 +13,14 @@ chrome.storage.local.get(['image', 'width', 'height'], function(result) {
     // bg.style.width = result.width;
     // bg.style.height = result.height;
     // alert(bg.style)
+
+    let whereBtnAppend = document.getElementById("header");
+    for (var i = 0; i < result.labels.length; i++) {
+        let labelBtn = document.createElement('a');
+        let labelName = document.createTextNode(result.labels[i]);
+        labelBtn.appendChild(labelName);
+        labelBtn.setAttribute('href', "../templates/index.html");
+        labelBtn.className = "button";
+        whereBtnAppend.append(labelBtn);
+    }
 });

@@ -91,7 +91,7 @@ function CaptureScreenshot() {
 	chrome.runtime.sendMessage(
 		{image: imgURL},
 		function(response){
-			chrome.storage.local.set({image: response.farewell.image});
+			chrome.storage.local.set({image: response.farewell.image, labels: response.farewell.labels});
 
 			// alert(response.farewell.scores)
 			let newDiv = document.createElement('div');
@@ -122,11 +122,11 @@ function CaptureScreenshot() {
 			ytpPlayer.style.display = 'none';
 			whereToAdd.prepend(newDiv);
 
-			setTimeout(() => {
-				alert('짜잔');
-				newDiv.style.display = 'none';
-				ytpPlayer.style.display = '';
-			}, 3000000);
+			// setTimeout(() => {
+			// 	alert('짜잔');
+			// 	newDiv.style.display = 'none';
+			// 	ytpPlayer.style.display = '';
+			// }, 3000000);
 
 		}
 	);

@@ -4,7 +4,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(function(data) {
 	});
 }, {url: [{hostSuffix: '.youtube.com'}]});
 
-var serverhost = 'http://127.0.0.1:8000/api';
+var serverhost = 'http://127.0.0.1:8000/dino_api';
 chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
 		fetch(serverhost, {

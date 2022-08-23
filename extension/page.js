@@ -142,7 +142,7 @@ function AddScreenshotButton() {
 var screenshotButton = document.createElement("button");
 screenshotButton.className = "screenshotButton ytp-button";
 screenshotButton.style.width = "auto";
-screenshotButton.innerHTML = "☘️ 인식 화면캡처";
+screenshotButton.innerHTML = "☘️ 식물 X-RAY";
 screenshotButton.style.cssFloat = "left";
 screenshotButton.onclick = CaptureScreenshot;
 

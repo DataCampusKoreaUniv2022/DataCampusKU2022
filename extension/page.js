@@ -85,6 +85,8 @@ function CaptureScreenshot() {
 	// 	}, 'image/' + screenshotFormat);
 	// }
 
+	player.pause()
+
 	var imgURL = canvas.toDataURL("image/jpeg", 1.0);
 	chrome.runtime.sendMessage(
 		{image: imgURL},

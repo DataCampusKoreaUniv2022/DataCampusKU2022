@@ -42,6 +42,8 @@ def dino_api(request):
             f.write(openedURL.file.read())
 
         image = Image.open('image.jpeg').convert("RGB") # load image
+        imgDPI = 96
+        imgWidth, imgHeight = image.size
 
         # transform images
         transform = T.Compose([
@@ -63,6 +65,7 @@ def dino_api(request):
         vslzr = COCOVisualizer()
 
         scores = output['scores']
+        print(scores[:5])
         labels = output['labels']
         boxes = box_ops.box_xyxy_to_cxcywh(output['boxes'])
         select_mask = scores > thershold
@@ -73,7 +76,7 @@ def dino_api(request):
             'size': torch.Tensor([image.shape[1], image.shape[2]]),
             'box_label': box_label
         }
-        resultImg = vslzr.visualize(image, pred_dict, savedir=None, dpi=100, show_in_console=False)
+        resultImg = vslzr.visualize(image, pred_dict, savedir=None, dpi=imgDPI, show_in_console=False, width=imgWidth, height=imgHeight)
         buffered = BytesIO()
         resultImg.save(buffered, format='PNG')
         data64 = base64.b64encode(buffered.getvalue())

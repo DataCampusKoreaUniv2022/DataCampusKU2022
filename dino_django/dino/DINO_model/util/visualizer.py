@@ -60,19 +60,20 @@ class COCOVisualizer():
     def __init__(self) -> None:
         pass
 
-    def visualize(self, img, tgt, caption=None, dpi=120, savedir=None, show_in_console=True):
+    def visualize(self, img, tgt, caption=None, dpi=100, savedir=None, show_in_console=True, width=1920, height=1080):
         """
         img: tensor(3, H, W)
         tgt: make sure they are all on cpu.
             must have items: 'image_id', 'boxes', 'size'
         """
-        plt.figure(dpi=dpi)
+        plt.figure(dpi=dpi, figsize=[width/dpi, height/dpi])
         plt.rcParams['font.size'] = '5'
         ax = plt.gca()
         img = renorm(img).permute(1, 2, 0)
         # if os.environ.get('IPDB_SHILONG_DEBUG', None) == 'INFO':
         #     import ipdb; ipdb.set_trace()
         ax.imshow(img)
+        plt.axis('off')
         
         self.addtgt(tgt)
         # if show_in_console:
@@ -87,7 +88,7 @@ class COCOVisualizer():
         #     os.makedirs(os.path.dirname(savename), exist_ok=True)
         #     plt.savefig(savename)
         buf = io.BytesIO()
-        plt.savefig(buf)
+        plt.savefig(buf, bbox_inches='tight', pad_inches=0)
         buf.seek(0)
         resultImg = Image.open(buf)
 
@@ -131,7 +132,7 @@ class COCOVisualizer():
                 _string = str(bl)
                 bbox_x, bbox_y, bbox_w, bbox_h = boxes[idx]
                 # ax.text(bbox_x, bbox_y, _string, color='black', bbox={'facecolor': 'yellow', 'alpha': 1.0, 'pad': 1})
-                ax.text(bbox_x, bbox_y, _string, color='black', bbox={'facecolor': color[idx], 'alpha': 0.6, 'pad': 1})
+                ax.text(bbox_x, bbox_y, _string, fontsize=20, color='black', bbox={'facecolor': color[idx], 'alpha': 0.6, 'pad': 1})
 
         if 'caption' in tgt:
             ax.set_title(tgt['caption'], wrap=True)

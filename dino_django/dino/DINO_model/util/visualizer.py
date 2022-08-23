@@ -75,7 +75,7 @@ class COCOVisualizer():
         ax.imshow(img)
         plt.axis('off')
         
-        self.addtgt(tgt)
+        self.addtgt(tgt, height)
         # if show_in_console:
         #     plt.show()
 
@@ -95,7 +95,7 @@ class COCOVisualizer():
         plt.close()
         return resultImg
 
-    def addtgt(self, tgt):
+    def addtgt(self, tgt, height=1080):
         """
         - tgt: dict. args:
             - boxes: num_boxes, 4. xywh, [0,1].
@@ -132,7 +132,7 @@ class COCOVisualizer():
                 _string = str(bl)
                 bbox_x, bbox_y, bbox_w, bbox_h = boxes[idx]
                 # ax.text(bbox_x, bbox_y, _string, color='black', bbox={'facecolor': 'yellow', 'alpha': 1.0, 'pad': 1})
-                ax.text(bbox_x, bbox_y, _string, fontsize=20, color='black', bbox={'facecolor': color[idx], 'alpha': 0.6, 'pad': 1})
+                ax.text(bbox_x, bbox_y, _string, fontsize=height/48, color='black', bbox={'facecolor': color[idx], 'alpha': 0.6, 'pad': 1})
 
         if 'caption' in tgt:
             ax.set_title(tgt['caption'], wrap=True)

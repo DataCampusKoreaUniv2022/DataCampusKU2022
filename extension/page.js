@@ -89,16 +89,33 @@ function CaptureScreenshot() {
 	chrome.runtime.sendMessage(
 		{image: imgURL},
 		function(response){
+			chrome.storage.local.set({image: response.farewell.image});
+
 			// alert(response.farewell.scores)
 			let newDiv = document.createElement('div');
-			const imgToAdd = document.createElement('img');
-			imgToAdd.src = response.farewell.image;
-			newDiv.append(imgToAdd);
 
-			let whereToAdd = document.getElementById('player-container-outer');
+			let iframeToAdd = document.createElement('iframe');
+			let xrayHtmlUrl = chrome.runtime.getURL('xray/index.html');
+			iframeToAdd.src = xrayHtmlUrl;
+			// let imgToAdd = document.createElement('img');
+			// imgToAdd.src = response.farewell.image;
+
+			let whereToAdd = document.getElementById('primary-inner');
 			let ytpPlayer = document.getElementById('player-container-inner');
-			let htmlPlayer = document.getElementById('html5-video-player');
+			let htmlPlayer = document.getElementsByClassName("video-stream html5-main-video")[0]
 
+			let getWidth = htmlPlayer.style.width;
+			let getHeight = htmlPlayer.style.height;
+			iframeToAdd.style.width = getWidth;
+			iframeToAdd.style.height = getHeight;
+			// iframeToAdd.frameBorder = '0';
+			iframeToAdd.marginWidth = '0';
+			iframeToAdd.marginHeight = '0';
+			// iframeToAdd.scrolling = 'no';
+
+			chrome.storage.local.set({width: getWidth, height: getHeight});
+
+			newDiv.append(iframeToAdd);
 			
 			ytpPlayer.style.display = 'none';
 			whereToAdd.prepend(newDiv);
@@ -107,7 +124,7 @@ function CaptureScreenshot() {
 				alert('짜잔');
 				newDiv.style.display = 'none';
 				ytpPlayer.style.display = '';
-			}, 3000);
+			}, 3000000);
 
 		}
 	);

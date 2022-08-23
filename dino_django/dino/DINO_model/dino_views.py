@@ -60,7 +60,7 @@ def dino_api(request):
             output = postprocessors['bbox'](output, torch.Tensor([[1.0, 1.0]]).cuda())[0]
 
         # visualize outputs
-        thershold = 0.3 # set a thershold
+        thershold = 0.2 # set a thershold
 
         vslzr = COCOVisualizer()
 

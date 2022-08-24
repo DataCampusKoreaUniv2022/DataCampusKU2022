@@ -83,10 +83,15 @@ def dino_api(request):
         resultImgURL = u'data:image/png;base64,' + data64.decode('utf-8')
         print(box_label)
 
+        labelJson = []
+        for label in box_label:
+            if label not in labelJson and label != 'etc':
+                labelJson.append(label)
+
         sendJson = {}
         sendJson['image'] = resultImgURL
         sendJson['scores'] = [0.5, 0.3, 0.1]
-        sendJson['labels'] = box_label
+        sendJson['labels'] = labelJson
         sendJson['boxes'] = [[0.5, 0.5, 0.5, 0.5], [0.2, 0.3, 0.4, 0.5], [0.1, 0.3, 0.5, 0.7]]
 
         return JsonResponse(sendJson)

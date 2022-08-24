@@ -7,12 +7,14 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(function(data) {
 var serverhost = 'http://127.0.0.1:8000/dino_api';
 chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
-		fetch(serverhost, {
-			method: 'POST',
-			body: request.image
-		}).then(response => response.json())
-		.then(response => sendResponse({farewell: response}))
-		.catch(error => console.log(error))
+		if (request.type == 'image'){
+			fetch(serverhost, {
+				method: 'POST',
+				body: request.image
+			}).then(response => response.json())
+			.then(response => sendResponse({farewell: response}))
+			.catch(error => console.log(error))
+		}
 
 		return true;
 	}

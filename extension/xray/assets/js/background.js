@@ -24,3 +24,9 @@ chrome.storage.local.get(['image', 'labels', 'width', 'height'], function(result
         whereBtnAppend.append(labelBtn);
     }
 });
+
+document.getElementById("exit").addEventListener("click", exitFunction);
+
+function exitFunction(){
+    chrome.tabs.executeScript({file: "/xray/assets/js/exit.js"});;
+}

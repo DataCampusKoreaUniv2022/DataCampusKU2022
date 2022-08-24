@@ -89,12 +89,13 @@ function CaptureScreenshot() {
 
 	var imgURL = canvas.toDataURL("image/jpeg", 1.0);
 	chrome.runtime.sendMessage(
-		{image: imgURL},
+		{type: 'image', image: imgURL},
 		function(response){
 			chrome.storage.local.set({image: response.farewell.image, labels: response.farewell.labels});
 
 			// alert(response.farewell.scores)
 			let newDiv = document.createElement('div');
+			newDiv.id = 'xraydiv';
 
 			let iframeToAdd = document.createElement('iframe');
 			let xrayHtmlUrl = chrome.runtime.getURL('xray/index.html');
@@ -130,6 +131,15 @@ function CaptureScreenshot() {
 
 		}
 	);
+}
+
+function exitFunction(){
+    let xrayDiv = document.getElementById("xraydiv");
+    alert(parent.document.title);
+    let ytpPlayer = document.getElementById('player-container-inner');
+
+    xrayDiv.style.display = 'none';
+    ytpPlayer.style.display = '';
 }
 
 function AddScreenshotButton() {

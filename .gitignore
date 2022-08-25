@@ -1,8 +1,8 @@
 .DS_Store
-dino_django/dino/DINO_model/ckpts/*
-dino_django/dino/DINO_model/dino_test_500
-dino_django/dino/DINO_model/dinoresult
-dino_django/dino/DINO_model/imagetest
-dino_django/dino/DINO_model/__pycache__/*.pyc
-dino_django/dino/__pycache__/*.pyc
+DINO_model/ckpts/*
+DINO_model/dino_test_500
+DINO_model/dinoresult
+DINO_model/imagetest
+DINO_model/__pycache__/*.pyc
+__pycache__/*.pyc
 dino_django/dino_django/__pycache__/*.pyc

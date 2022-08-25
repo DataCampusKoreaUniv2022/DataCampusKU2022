@@ -2,7 +2,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
-from .DINO_model import dino_views
+
+import sys, os
+sys.path.insert(1, os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))) + "/DINO_model")
+print(sys.path)
+import dino_views
 
 app_name = 'dino'
 urlpatterns = [

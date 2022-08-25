@@ -19,8 +19,8 @@ import urllib
 import base64
 from io import BytesIO
 
-model_config_path = "dino/DINO_model/config/DINO/DINO_4scale.py"
-model_checkpoint_path = "dino/DINO_model/ckpts/20_checkpoint_best_regular.pth"
+model_config_path = "../DINO_model/config/DINO/DINO_4scale.py"
+model_checkpoint_path = "../DINO_model/ckpts/20_checkpoint_best_regular.pth"
 
 args = SLConfig.fromfile(model_config_path) 
 args.device = 'cuda' 
@@ -29,7 +29,7 @@ checkpoint = torch.load(model_checkpoint_path, map_location='cpu')
 model.load_state_dict(checkpoint['model'])
 _ = model.eval()
 
-with open('dino/DINO_model/util/20class_plant_coco_id2name.json') as f:
+with open('../DINO_model/util/20class_plant_coco_id2name.json') as f:
     id2name = json.load(f)
     id2name = {int(k):v for k,v in id2name.items()}
 

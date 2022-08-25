@@ -19,7 +19,7 @@ chrome.storage.local.get(['image', 'labels', 'width', 'height'], function(result
         let labelBtn = document.createElement('a');
         let labelName = document.createTextNode(result.labels[i]);
         labelBtn.appendChild(labelName);
-        labelBtn.setAttribute('href', "../templates/index.html");
+        labelBtn.setAttribute('href', "../templates/" + result.labels[i] +".html");
         labelBtn.className = "button";
         whereBtnAppend.append(labelBtn);
     }

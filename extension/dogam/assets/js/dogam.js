@@ -9,7 +9,7 @@ chrome.storage.local.get(['labellist'], function(result) {
 
         var dogamSquare = document.createElement("a");
         dogamSquare.id = labelList[i];
-        dogamSquare.href = "../templates/index.html";
+        dogamSquare.href = "../templates/" + labelList[i] + ".html";
         dogamSquare.target = '_blank';
         dogamSquare.className = "image";
         dogamSquare.style.backgroundImage = "url('" + "../templates/images/" + labelList[i] + ".jpg" + "')";

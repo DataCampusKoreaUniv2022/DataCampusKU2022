@@ -13,8 +13,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os, sys
 # sys.path.insert(1, os.path.dirname(__file__) + "/dino")
-sys.path.insert(1, os.path.dirname(os.path.abspath(os.path.dirname(__file__))) + "/dino/DINO_model")
-
+# sys.path.insert(1, os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))) + "/DINO_model")
+# print(sys.path)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

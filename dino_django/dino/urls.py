@@ -5,7 +5,6 @@ from . import views
 
 import sys, os
 sys.path.insert(1, os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))) + "/DINO_model")
-print(sys.path)
 import dino_views
 
 app_name = 'dino'

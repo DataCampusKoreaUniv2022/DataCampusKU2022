@@ -11,20 +11,12 @@ import io
 
 
 class TSVDataset(Dataset):
-    """ TSV dataset for ImageNet 1K training
-    """    
     def __init__(self, tsv_file, transform=None, target_transform=None):
         self.tsv = TSVFile(tsv_file)
         self.transform = transform
         self.target_transform = target_transform
 
     def __getitem__(self, index):
-        """
-        Args:
-            index (int): Index
-        Returns:
-            tuple: (image, target) where target is class_index of the target class.
-        """
         row = self.tsv.seek(index)
         image_data = base64.b64decode(row[-1])
         image = Image.open(io.BytesIO(image_data))

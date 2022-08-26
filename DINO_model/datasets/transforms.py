@@ -1,7 +1,3 @@
-# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
-"""
-Transforms and data augmentation for both image + bbox.
-"""
 import random
 
 import PIL
@@ -19,7 +15,6 @@ def crop(image, target, region):
     target = target.copy()
     i, j, h, w = region
 
-    # should we do something wrt the original size?
     target["size"] = torch.tensor([h, w])
 
     fields = ["labels", "area", "iscrowd"]
@@ -36,15 +31,11 @@ def crop(image, target, region):
         fields.append("boxes")
 
     if "masks" in target:
-        # FIXME should we update the area here if there are no boxes?
         target['masks'] = target['masks'][:, i:i + h, j:j + w]
         fields.append("masks")
 
 
-    # remove elements for which the boxes or masks that have zero area
     if "boxes" in target or "masks" in target:
-        # favor boxes selection when defining which elements to keep
-        # this is compatible with previous implementation
         if "boxes" in target:
             cropped_boxes = target['boxes'].reshape(-1, 2, 2)
             keep = torch.all(cropped_boxes[:, 1, :] > cropped_boxes[:, 0, :], dim=1)
@@ -75,7 +66,6 @@ def hflip(image, target):
 
 
 def resize(image, target, size, max_size=None):
-    # size can be min_size (scalar) or (w, h) tuple
 
     def get_size_with_aspect_ratio(image_size, size, max_size=None):
         w, h = image_size
@@ -134,12 +124,10 @@ def resize(image, target, size, max_size=None):
 
 
 def pad(image, target, padding):
-    # assumes that we only pad on the bottom right corners
     padded_image = F.pad(image, (0, 0, padding[0], padding[1]))
     if target is None:
         return padded_image, None
     target = target.copy()
-    # should we do something wrt the original size?
     target["size"] = torch.tensor(padded_image.size[::-1])
     if "masks" in target:
         target['masks'] = torch.nn.functional.pad(target['masks'], (0, padding[0], 0, padding[1]))
@@ -219,10 +207,6 @@ class RandomPad(object):
 
 
 class RandomSelect(object):
-    """
-    Randomly selects between transforms1 and transforms2,
-    with probability p for transforms1 and (1 - p) for transforms2
-    """
     def __init__(self, transforms1, transforms2, p=0.5):
         self.transforms1 = transforms1
         self.transforms2 = transforms2

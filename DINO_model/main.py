@@ -1,4 +1,3 @@
-# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 import argparse
 import datetime
 import json
@@ -40,7 +39,7 @@ def get_args_parser():
         help='override some settings in the used config, the key-value pair '
         'in xxx=yyy format will be merged into config file.')
 
-    # dataset parameters
+    # 데이터셋 파라미터
     parser.add_argument('--dataset_file', default='coco')
     parser.add_argument('--coco_path', type=str, default='/comp_robot/cv_public_dataset/COCO2017/')
     parser.add_argument('--coco_panoptic_path', type=str)
@@ -48,7 +47,7 @@ def get_args_parser():
     parser.add_argument('--fix_size', action='store_true')
 
 
-    # training parameters
+    # 학습 파라미터
     parser.add_argument('--output_dir', default='',
                         help='path where to save, empty for no saving')
     parser.add_argument('--note', default='',
@@ -71,7 +70,7 @@ def get_args_parser():
     parser.add_argument('--save_results', action='store_true')
     parser.add_argument('--save_log', action='store_true')
 
-    # distributed training parameters
+    # 분산학습 파라미터
     parser.add_argument('--world_size', default=1, type=int,
                         help='number of distributed processes')
     parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
@@ -85,7 +84,6 @@ def get_args_parser():
 
 
 def build_model_main(args):
-    # we use register to maintain models from catdet6 on.
     from models.registry import MODULE_BUILD_FUNCS
     assert args.modelname in MODULE_BUILD_FUNCS._module_dict
     build_func = MODULE_BUILD_FUNCS.get(args.modelname)
@@ -94,7 +92,6 @@ def build_model_main(args):
 
 def main(args):
     utils.init_distributed_mode(args)
-    # load cfg file and update the args
     print("Loading config file from {}".format(args.config_file))
     time.sleep(args.rank * 0.02)
     cfg = SLConfig.fromfile(args.config_file)
@@ -114,13 +111,11 @@ def main(args):
         else:
             raise ValueError("Key {} can used by args only".format(k))
 
-    # update some new args temporally
     if not getattr(args, 'use_ema', None):
         args.use_ema = False
     if not getattr(args, 'debug', None):
         args.debug = False
 
-    # setup logger
     os.makedirs(args.output_dir, exist_ok=True)
     logger = setup_logger(output=os.path.join(args.output_dir, 'info.txt'), distributed_rank=args.rank, color=False, name="detr")
     logger.info("git:\n  {}\n".format(utils.get_sha()))
@@ -142,18 +137,15 @@ def main(args):
 
     device = torch.device(args.device)
 
-    # fix the seed for reproducibility
     seed = args.seed + utils.get_rank()
     torch.manual_seed(seed)
     np.random.seed(seed)
     random.seed(seed)
 
-    # build model
     model, criterion, postprocessors = build_model_main(args)
     wo_class_error = False
     model.to(device)
 
-    # ema
     if args.use_ema:
         ema_m = ModelEma(model, args.ema_decay)
     else:
@@ -200,7 +192,6 @@ def main(args):
 
 
     if args.dataset_file == "coco_panoptic":
-        # We also evaluate AP during panoptic training, on original coco DS
         coco_val = datasets.coco.build("val", args)
         base_ds = get_coco_api_from_dataset(coco_val)
     else:
@@ -290,7 +281,6 @@ def main(args):
             lr_scheduler.step()
         if args.output_dir:
             checkpoint_paths = [output_dir / 'checkpoint.pth']
-            # extra checkpoint before LR drop and every 100 epochs
             if (epoch + 1) % args.lr_drop == 0 or (epoch + 1) % args.save_checkpoint_interval == 0:
                 checkpoint_paths.append(output_dir / f'checkpoint{epoch:04}.pth')
             for checkpoint_path in checkpoint_paths:
@@ -366,7 +356,6 @@ def main(args):
             with (output_dir / "log.txt").open("a") as f:
                 f.write(json.dumps(log_stats) + "\n")
 
-            # for evaluation logs
             if coco_evaluator is not None:
                 (output_dir / 'eval').mkdir(exist_ok=True)
                 if "bbox" in coco_evaluator.coco_eval:
@@ -380,7 +369,6 @@ def main(args):
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('Training time {}'.format(total_time_str))
 
-    # remove the copied files.
     copyfilelist = vars(args).get('copyfilelist')
     if copyfilelist and args.local_rank == 0:
         from datasets.data_util import remove

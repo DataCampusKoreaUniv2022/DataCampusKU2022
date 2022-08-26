@@ -24,9 +24,6 @@ def parse_args():
     parser.add_argument("--requeue", action='store_true', help="job requeue if preempted.")
     parser.add_argument("--mail_type", type=str, default='ALL', help=" send email when job begins, ends, fails or preempted.")
     parser.add_argument("--mail_user", type=str, default='', help=" email address.")
-    # refer to https://slurm.schedmd.com/sbatch.html & \
-    # https://github.com/facebookincubator/submitit/blob/11d8f87f785669e8a01aa9773a107f9180a63b09/submitit/slurm/slurm.py \
-    # for more details about parameters of slurm.
     return parser.parse_args()
 
 
@@ -40,7 +37,6 @@ def get_shared_folder() -> Path:
 
 
 def get_init_file():
-    # Init file must not exist, but it's parent dir must exist.
     os.makedirs(str(get_shared_folder()), exist_ok=True)
     init_file = get_shared_folder() / f"{uuid.uuid4().hex}_init"
     if init_file.exists():
@@ -106,10 +102,10 @@ def main():
     executor.update_parameters(
         mem_gb=50 * num_gpus_per_node,
         gpus_per_node=num_gpus_per_node,
-        tasks_per_node=num_gpus_per_node,  # one task per GPU
+        tasks_per_node=num_gpus_per_node, 
         cpus_per_task=16,
         nodes=nodes,
-        timeout_min=timeout_min,  # max is 60 * 72
+        timeout_min=timeout_min, 
         qos=qos,
         slurm_additional_parameters=additional_parameters
     )

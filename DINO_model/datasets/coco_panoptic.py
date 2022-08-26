@@ -1,4 +1,3 @@
-# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 import json
 from pathlib import Path
 
@@ -17,10 +16,7 @@ class CocoPanoptic:
         with open(ann_file, 'r') as f:
             self.coco = json.load(f)
 
-        # sort 'images' field so that they are aligned with 'annotations'
-        # i.e., in alphabetical order
         self.coco['images'] = sorted(self.coco['images'], key=lambda x: x['id'])
-        # sanity check
         if "annotations" in self.coco:
             for img, ann in zip(self.coco['images'], self.coco['annotations']):
                 assert img['file_name'][:-4] == ann['file_name'][:-4]

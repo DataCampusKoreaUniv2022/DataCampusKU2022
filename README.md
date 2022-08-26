@@ -44,6 +44,37 @@ X-Ray는 아마존 프라임 비디오에서 제공하고 있는 서비스로, �
 
 # 설치
 
+## 구글 드라이브 링크
+
+- **파일 경로 정리 노션**
+    
+    https://childlike-health-ab5.notion.site/Code-77e0a92c34724356832ee79677958e78
+    
+- 전체 파일 폴더 (학습, 데이터셋 등)
+    
+    https://drive.google.com/drive/folders/1NOeVkLNDvUa1HIswMUL6CKX76qQhUIrs?usp=sharing
+    
+- 최종 이미지 데이터셋 + Annotation
+    
+    `dataset/dino_data`
+    
+    https://drive.google.com/drive/folders/1MWX8tIL5itq8BloK7PehzPg3ZzmPSFRO?usp=sharing
+    
+- 최종 모델 체크포인트
+    
+    `dataset/DINO/logs/DINO/R50-MS4-res/checkpoint_best_regular.pth`
+    
+    https://drive.google.com/file/d/1-_7q5wRy1i_Wgan2qT0LeiItGFwVukka/view?usp=sharing
+    
+- 제출 파일 폴더
+    
+    https://drive.google.com/drive/folders/1kBhBOzFLJjsE9j-Tlvv9nxonb3NhaHc-?usp=sharing
+    
+- 기타 파일 폴더
+    
+    https://drive.google.com/drive/folders/11S8LZkAacI19tG6z-kEnQ1tVGC2CMEne?usp=sharing
+    
+
 ## 공통
 
 ```

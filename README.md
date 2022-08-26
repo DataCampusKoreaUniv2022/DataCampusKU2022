@@ -130,7 +130,7 @@ git clone [https://github.com/DataCampusKoreaUniv2022/DataCampusKU2022.git](http
 
 ---
 
-## 시연 화면
+# 시연 화면
 
 ![KakaoTalk_Photo_2022-08-26-19-15-10.jpeg](README%20e4ffc24a345949238559abbf92336495/KakaoTalk_Photo_2022-08-26-19-15-10.jpeg)
 

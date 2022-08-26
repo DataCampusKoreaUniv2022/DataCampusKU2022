@@ -110,24 +110,34 @@ git clone [https://github.com/DataCampusKoreaUniv2022/DataCampusKU2022.git](http
     
     `ALLOWED_HOSTS` 에 서버주소 추가 (포트 X)
     
-    ```jsx
+    ```
     ALLOWED_HOSTS = ['000.000.000.000']
     ```
     
 2. django 디렉토리로 이동
     
-    ```jsx
+    ```
     cd dino_django
     ```
     
 3. 서버 실행
     
-    ```jsx
+    ```
     python manage.py runserver # localhost
     python manage.py runserver 0.0.0.0:(포트번호) # 배포시, 기본값 8000
     ```
-    
 
+4. (DINO 학습 데이터 변경 시)
+    
+    `DINO_model/dino_views.py` 수정
+    
+    ```python
+    model_config_path = "(config 파일 상대경로)"
+    model_checkpoint_path = "(체크포인트 파일 상대경로)"
+    
+    with open('(id 클래스 json 파일)') as f:
+    ```
+    
 ---
 
 # 시연 화면

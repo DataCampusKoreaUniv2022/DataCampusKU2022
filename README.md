@@ -48,7 +48,7 @@ X-Ray는 아마존 프라임 비디오에서 제공하고 있는 서비스로, �
 ## 공통
 
 ```
-git clone [https://github.com/DataCampusKoreaUniv2022/DataCampusKU2022.git](https://github.com/DataCampusKoreaUniv2022/DataCampusKU2022.git)
+git clone https://github.com/DataCampusKoreaUniv2022/DataCampusKU2022.git
 ```
 
 ## Chrome Extension 설치

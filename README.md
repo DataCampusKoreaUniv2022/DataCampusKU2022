@@ -30,8 +30,7 @@ X-Ray는 아마존 프라임 비디오에서 제공하고 있는 서비스로, �
     - Linux Ubuntu 20.04 (WSL2)
     - Django Framework
     - CUDA GPU
-        - 학습: Tesla T4 (Google Colab)
-        - 시각화/서버: GeForce GTX 1060 3GB
+        - 시각화: GeForce GTX 1060 3GB
 - Frontend
     - Chrome Extension
     - HTML + CSS

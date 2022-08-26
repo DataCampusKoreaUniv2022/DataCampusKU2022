@@ -1,16 +1,3 @@
-# ------------------------------------------------------------------------
-# DINO
-# Copyright (c) 2022 IDEA. All Rights Reserved.
-# Licensed under the Apache License, Version 2.0 [see LICENSE for details]
-# ------------------------------------------------------------------------
-# Conditional DETR Transformer class.
-# Copyright (c) 2021 Microsoft. All Rights Reserved.
-# Licensed under the Apache License, Version 2.0 [see LICENSE for details]
-# ------------------------------------------------------------------------
-# Modified from DETR (https://github.com/facebookresearch/detr)
-# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-# ------------------------------------------------------------------------
-
 import math, random
 import copy
 from typing import Optional
@@ -213,7 +200,6 @@ class DeformableTransformer(nn.Module):
 
         self.rm_self_attn_layers = rm_self_attn_layers
         if rm_self_attn_layers is not None:
-            # assert len(rm_self_attn_layers) == num_decoder_layers
             print("Removing the self-attn in {} decoder layers".format(rm_self_attn_layers))
             for lid, dec_layer in enumerate(self.decoder.layers):
                 if lid in rm_self_attn_layers:
@@ -260,19 +246,6 @@ class DeformableTransformer(nn.Module):
     
 
     def forward(self, srcs, masks, refpoint_embed, pos_embeds, tgt, attn_mask=None):
-        """
-        Input:
-            - srcs: List of multi features [bs, ci, hi, wi]
-            - masks: List of multi masks [bs, hi, wi]
-            - refpoint_embed: [bs, num_dn, 4]. None in infer
-            - pos_embeds: List of multi pos embeds [bs, ci, hi, wi]
-            - tgt: [bs, num_dn, d_model]. None in infer
-            
-        """
-        # if self.two_stage_type != 'no' and self.two_stage_add_query_num == 0:
-        #     assert refpoint_embed is None
-
-        # prepare input for encoder
         src_flatten = []
         mask_flatten = []
         lvl_pos_embed_flatten = []
@@ -302,9 +275,6 @@ class DeformableTransformer(nn.Module):
         # two stage
         enc_topk_proposals = enc_refpoint_embed = None
 
-        #########################################################
-        # Begin Encoder
-        #########################################################
         memory, enc_intermediate_output, enc_intermediate_refpoints = self.encoder(
                 src_flatten, 
                 pos=lvl_pos_embed_flatten, 
@@ -315,14 +285,6 @@ class DeformableTransformer(nn.Module):
                 ref_token_index=enc_topk_proposals, # bs, nq 
                 ref_token_coord=enc_refpoint_embed, # bs, nq, 4
                 )
-        #########################################################
-        # End Encoder
-        # - memory: bs, \sum{hw}, c
-        # - mask_flatten: bs, \sum{hw}
-        # - lvl_pos_embed_flatten: bs, \sum{hw}, c
-        # - enc_intermediate_output: None or (nenc+1, bs, nq, c) or (nenc, bs, nq, c)
-        # - enc_intermediate_refpoints: None or (nenc+1, bs, nq, c) or (nenc, bs, nq, c)
-        #########################################################
 
 
         if self.two_stage_type =='standard':
@@ -390,16 +352,6 @@ class DeformableTransformer(nn.Module):
 
         else:
             raise NotImplementedError("unknown two_stage_type {}".format(self.two_stage_type))
-        #########################################################
-        # End preparing tgt
-        # - tgt: bs, NQ, d_model
-        # - refpoint_embed(unsigmoid): bs, NQ, d_model 
-        ######################################################### 
-
-
-        #########################################################
-        # Begin Decoder
-        #########################################################
         hs, references = self.decoder(
                 tgt=tgt.transpose(0, 1), 
                 memory=memory.transpose(0, 1), 
@@ -409,16 +361,7 @@ class DeformableTransformer(nn.Module):
                 level_start_index=level_start_index, 
                 spatial_shapes=spatial_shapes,
                 valid_ratios=valid_ratios,tgt_mask=attn_mask)
-        #########################################################
-        # End Decoder
-        # hs: n_dec, bs, nq, d_model
-        # references: n_dec+1, bs, nq, query_dim
-        #########################################################
 
-
-        #########################################################
-        # Begin postprocess
-        #########################################################     
         if self.two_stage_type == 'standard':
             if self.two_stage_keep_all_tokens:
                 hs_enc = output_memory.unsqueeze(0)
@@ -430,18 +373,8 @@ class DeformableTransformer(nn.Module):
                 ref_enc = refpoint_embed_undetach.sigmoid().unsqueeze(0)
         else:
             hs_enc = ref_enc = None
-        #########################################################
-        # End postprocess
-        # hs_enc: (n_enc+1, bs, nq, d_model) or (1, bs, nq, d_model) or (n_enc, bs, nq, d_model) or None
-        # ref_enc: (n_enc+1, bs, nq, query_dim) or (1, bs, nq, query_dim) or (n_enc, bs, nq, d_model) or None
-        #########################################################        
 
         return hs, references, hs_enc, ref_enc, init_box_proposal
-        # hs: (n_dec, bs, nq, d_model)
-        # references: sigmoid coordinates. (n_dec+1, bs, bq, 4)
-        # hs_enc: (n_enc+1, bs, nq, d_model) or (1, bs, nq, d_model) or None
-        # ref_enc: sigmoid coordinates. \
-        #           (n_enc+1, bs, nq, query_dim) or (1, bs, nq, query_dim) or None
 
 class TransformerEncoder(nn.Module):
 
@@ -510,22 +443,7 @@ class TransformerEncoder(nn.Module):
             ref_token_index: Optional[Tensor]=None,
             ref_token_coord: Optional[Tensor]=None 
             ):
-        """
-        Input:
-            - src: [bs, sum(hi*wi), 256]
-            - pos: pos embed for src. [bs, sum(hi*wi), 256]
-            - spatial_shapes: h,w of each level [num_level, 2]
-            - level_start_index: [num_level] start point of level in sum(hi*wi).
-            - valid_ratios: [bs, num_level, 2]
-            - key_padding_mask: [bs, sum(hi*wi)]
 
-            - ref_token_index: bs, nq
-            - ref_token_coord: bs, nq, 4
-        Intermedia:
-            - reference_points: [bs, sum(hi*wi), num_level, 2]
-        Outpus: 
-            - output: [bs, sum(hi*wi), 256]
-        """
         if self.two_stage_type in ['no', 'standard', 'enceachlayer', 'enclayer1']:
             assert ref_token_index is None
 
@@ -545,7 +463,6 @@ class TransformerEncoder(nn.Module):
             intermediate_ref.append(ref_token_coord)
 
 
-        # intermediate_coord = []
         # main process
         for layer_id, layer in enumerate(self.layers):
             # main process
@@ -677,14 +594,7 @@ class TransformerDecoder(nn.Module):
                 valid_ratios: Optional[Tensor] = None,
                 
                 ):
-        """
-        Input:
-            - tgt: nq, bs, d_model
-            - memory: hw, bs, d_model
-            - pos: hw, bs, d_model
-            - refpoints_unsigmoid: nq, bs, 2/4
-            - valid_ratios/spatial_shapes: bs, nlevel, 2
-        """
+
         output = tgt
 
         intermediate = []
@@ -710,22 +620,17 @@ class TransformerDecoder(nn.Module):
                 query_sine_embed = gen_sineembed_for_position(reference_points) # nq, bs, 256*2
                 reference_points_input = None
 
-            # conditional query
-            # import ipdb; ipdb.set_trace()
             raw_query_pos = self.ref_point_head(query_sine_embed) # nq, bs, 256
             pos_scale = self.query_scale(output) if self.query_scale is not None else 1
             query_pos = pos_scale * raw_query_pos
             if not self.deformable_decoder:
                 query_sine_embed = query_sine_embed[..., :self.d_model] * self.query_pos_sine_scale(output)
 
-            # modulated HW attentions
             if not self.deformable_decoder and self.modulate_hw_attn:
                 refHW_cond = self.ref_anchor_head(output).sigmoid() # nq, bs, 2
                 query_sine_embed[..., self.d_model // 2:] *= (refHW_cond[..., 0] / reference_points[..., 2]).unsqueeze(-1)
                 query_sine_embed[..., :self.d_model // 2] *= (refHW_cond[..., 1] / reference_points[..., 3]).unsqueeze(-1)
 
-            # main process
-            # import ipdb; ipdb.set_trace()
             dropflag = False
             if self.dec_layer_dropout_prob is not None:
                 prob = random.random()
@@ -749,20 +654,14 @@ class TransformerDecoder(nn.Module):
                     cross_attn_mask = memory_mask
                 )
 
-            # iter update
             if self.bbox_embed is not None:
-                # box_holder = self.bbox_embed(output)
-                # box_holder[..., :self.query_dim] += inverse_sigmoid(reference_points)
-                # new_reference_points = box_holder[..., :self.query_dim].sigmoid()
 
                 reference_before_sigmoid = inverse_sigmoid(reference_points)
                 delta_unsig = self.bbox_embed[layer_id](output)
                 outputs_unsig = delta_unsig + reference_before_sigmoid
                 new_reference_points = outputs_unsig.sigmoid()
 
-                # select # ref points
                 if self.dec_layer_number is not None and layer_id != self.num_layers - 1:
-                    # import ipdb; ipdb.set_trace()
                     nq_now = new_reference_points.shape[0]
                     select_number = self.dec_layer_number[layer_id + 1]
                     if nq_now != select_number:
@@ -863,8 +762,6 @@ class DeformableTransformerDecoderLayer(nn.Module):
         self.module_seq = module_seq
         assert sorted(module_seq) == ['ca', 'ffn', 'sa']
 
-        # cross attention
-        # self.cross_attn = MSDeformAttn(d_model, n_levels, n_heads, n_points)
         if use_deformable_box_attn:
             self.cross_attn = MSDeformableBoxAttention(d_model, n_levels, n_heads, n_boxes=n_points, used_func=box_attn_type)
         else:

@@ -1,16 +1,3 @@
-# ------------------------------------------------------------------------
-# DINO
-# Copyright (c) 2022 IDEA. All Rights Reserved.
-# Licensed under the Apache License, Version 2.0 [see LICENSE for details]
-# ------------------------------------------------------------------------
-# Deformable DETR
-# Copyright (c) 2020 SenseTime. All Rights Reserved.
-# Licensed under the Apache License, Version 2.0 [see LICENSE for details]
-# ------------------------------------------------------------------------
-# Modified from DETR (https://github.com/facebookresearch/detr)
-# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
-# ------------------------------------------------------------------------
-
 import copy
 import os
 from typing import Optional, List
@@ -138,14 +125,8 @@ class DeformableTransformer(nn.Module):
         return valid_ratio
 
     def forward(self, srcs, masks, pos_embeds, query_embed=None):
-        """
-        Input:
-            - srcs: List([bs, c, h, w])
-            - masks: List([bs, h, w])
-        """
         assert self.two_stage or query_embed is not None
 
-        # prepare input for encoder
         src_flatten = []
         mask_flatten = []
         lvl_pos_embed_flatten = []
@@ -173,12 +154,10 @@ class DeformableTransformer(nn.Module):
         memory = self.encoder(src_flatten, spatial_shapes, level_start_index, valid_ratios, lvl_pos_embed_flatten, mask_flatten)
         # import ipdb; ipdb.set_trace()
 
-        # prepare input for decoder
         bs, _, c = memory.shape
         if self.two_stage:
             output_memory, output_proposals = self.gen_encoder_output_proposals(memory, mask_flatten, spatial_shapes)
 
-            # hack implementation for two-stage Deformable DETR
             enc_outputs_class = self.decoder.class_embed[self.decoder.num_layers](output_memory)
             enc_outputs_coord_unact = self.decoder.bbox_embed[self.decoder.num_layers](output_memory) + output_proposals
 
@@ -203,8 +182,6 @@ class DeformableTransformer(nn.Module):
                 # bs, num_quires, 2
             init_reference_out = reference_points
 
-        # decoder
-        # import ipdb; ipdb.set_trace()
         hs, inter_references = self.decoder(tgt, reference_points, memory,
                                             spatial_shapes, level_start_index, valid_ratios, 
                                             query_pos=query_embed if not self.use_dab else None, 
@@ -260,7 +237,6 @@ class DeformableTransformerEncoderLayer(nn.Module):
         return src
 
     def forward(self, src, pos, reference_points, spatial_shapes, level_start_index, key_padding_mask=None):
-        # self attention
         # import ipdb; ipdb.set_trace()
         src2 = self.self_attn(self.with_pos_embed(src, pos), reference_points, src, spatial_shapes, level_start_index, key_padding_mask)
         src = src + self.dropout1(src2)
@@ -303,17 +279,6 @@ class DeformableTransformerEncoder(nn.Module):
         return reference_points
 
     def forward(self, src, spatial_shapes, level_start_index, valid_ratios, pos=None, padding_mask=None):
-        """
-        Input:
-            - src: [bs, sum(hi*wi), 256]
-            - spatial_shapes: h,w of each level [num_level, 2]
-            - level_start_index: [num_level] start point of level in sum(hi*wi).
-            - valid_ratios: [bs, num_level, 2]
-            - pos: pos embed for src. [bs, sum(hi*wi), 256]
-            - padding_mask: [bs, sum(hi*wi)]
-        Intermedia:
-            - reference_points: [bs, sum(hi*wi), num_lebel, 2]
-        """
         output = src
         # bs, sum(hi*wi), 256
         # import ipdb; ipdb.set_trace()
@@ -342,7 +307,6 @@ class DeformableTransformerDecoderLayer(nn.Module):
         self.module_seq = module_seq
         assert sorted(module_seq) == ['ca', 'ffn', 'sa']
 
-        # cross attention
         # self.cross_attn = MSDeformAttn(d_model, n_levels, n_heads, n_points)
         if use_deformable_box_attn:
             self.cross_attn = MSDeformableBoxAttention(d_model, n_levels, n_heads, n_boxes=n_points, used_func=box_attn_type)
@@ -512,78 +476,6 @@ class DeformableTransformerDecoderLayer(nn.Module):
 
         return tgt
 
-    # def forward(self, 
-    #             # for tgt
-    #             tgt: Optional[Tensor],  # nq, bs, d_model
-    #             tgt_query_pos: Optional[Tensor] = None, # pos for query. MLP(Sine(pos))
-    #             tgt_query_sine_embed: Optional[Tensor] = None, # pos for query. Sine(pos)
-    #             tgt_key_padding_mask: Optional[Tensor] = None,
-    #             tgt_reference_points: Optional[Tensor] = None, # nq, bs, 4
-
-    #             # for memory
-    #             memory: Optional[Tensor] = None, # hw, bs, d_model
-    #             memory_key_padding_mask: Optional[Tensor] = None,
-    #             memory_level_start_index: Optional[Tensor] = None, # num_levels
-    #             memory_spatial_shapes: Optional[Tensor] = None, # bs, num_levels, 2
-    #             memory_pos: Optional[Tensor] = None, # pos for memory
-
-    #             # sa
-    #             self_attn_mask: Optional[Tensor] = None, # mask used for self-attention
-    #             cross_attn_mask: Optional[Tensor] = None, # mask used for cross-attention
-    #         ):
-    #     """
-    #     Input:
-    #         - tgt/tgt_query_pos: nq, bs, d_model
-    #         - 
-    #     """
-    #     assert cross_attn_mask is None
-
-    #     # self attention
-    #     if self.self_attn is not None:
-    #         # import ipdb; ipdb.set_trace()
-    #         if self.decoder_sa_type == 'sa':
-    #             q = k = self.with_pos_embed(tgt, tgt_query_pos)
-    #             tgt2 = self.self_attn(q, k, tgt, attn_mask=self_attn_mask)[0]
-    #             tgt = tgt + self.dropout2(tgt2)
-    #             tgt = self.norm2(tgt)
-    #         elif self.decoder_sa_type == 'ca_label':
-    #             # import ipdb; ipdb.set_trace()
-    #             # q = self.with_pos_embed(tgt, tgt_query_pos)
-    #             bs = tgt.shape[1]
-    #             k = v = self.label_embedding.weight[:, None, :].repeat(1, bs, 1)
-    #             tgt2 = self.self_attn(tgt, k, v, attn_mask=self_attn_mask)[0]
-    #             tgt = tgt + self.dropout2(tgt2)
-    #             tgt = self.norm2(tgt)
-    #         elif self.decoder_sa_type == 'ca_content':
-    #             tgt2 = self.self_attn(self.with_pos_embed(tgt, tgt_query_pos).transpose(0, 1),
-    #                         tgt_reference_points.transpose(0, 1).contiguous(),
-    #                         memory.transpose(0, 1), memory_spatial_shapes, memory_level_start_index, memory_key_padding_mask).transpose(0, 1)
-    #             tgt = tgt + self.dropout2(tgt2)
-    #             tgt = self.norm2(tgt)
-    #         else:
-    #             raise NotImplementedError("Unknown decoder_sa_type {}".format(self.decoder_sa_type))
-
-
-    #     # cross attention
-    #     # import ipdb; ipdb.set_trace()
-    #     if self.key_aware_type is not None:
-    #         if self.key_aware_type == 'mean':
-    #             tgt = tgt + memory.mean(0, keepdim=True)
-    #         elif self.key_aware_type == 'proj_mean':
-    #             tgt = tgt + self.key_aware_proj(memory).mean(0, keepdim=True)
-    #         else:
-    #             raise NotImplementedError("Unknown key_aware_type: {}".format(self.key_aware_type))
-    #     tgt2 = self.cross_attn(self.with_pos_embed(tgt, tgt_query_pos).transpose(0, 1),
-    #                            tgt_reference_points.transpose(0, 1).contiguous(),
-    #                            memory.transpose(0, 1), memory_spatial_shapes, memory_level_start_index, memory_key_padding_mask).transpose(0, 1)
-    #     tgt = tgt + self.dropout1(tgt2)
-    #     tgt = self.norm1(tgt)
-
-    #     # ffn
-    #     tgt = self.forward_ffn(tgt)
-
-    #     return tgt
-
 
 class DeformableTransformerDecoder(nn.Module):
     def __init__(self, decoder_layer, num_layers, return_intermediate=False, use_dab=False, d_model=256, query_dim=4):
@@ -592,7 +484,6 @@ class DeformableTransformerDecoder(nn.Module):
         self.num_layers = num_layers
         self.return_intermediate = return_intermediate
         assert return_intermediate
-        # hack implementation for iterative bounding box refinement and two-stage Deformable DETR
         self.bbox_embed = None
         self.class_embed = None
         self.use_dab = use_dab
@@ -630,7 +521,6 @@ class DeformableTransformerDecoder(nn.Module):
         
             output = layer(output, query_pos, reference_points_input, src, src_spatial_shapes, src_level_start_index, src_padding_mask)
 
-            # hack implementation for iterative bounding box refinement
             if self.bbox_embed is not None:
                 box_holder = self.bbox_embed(output)
                 box_holder[..., :self.query_dim] += inverse_sigmoid(reference_points)

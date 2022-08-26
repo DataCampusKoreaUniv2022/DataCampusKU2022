@@ -1,37 +1,14 @@
-# ------------------------------------------------------------------------
-# DINO
-# Copyright (c) 2022 IDEA. All Rights Reserved.
-# Licensed under the Apache License, Version 2.0 [see LICENSE for details]
-# ------------------------------------------------------------------------
-# DN-DETR
-# Copyright (c) 2022 IDEA. All Rights Reserved.
-# Licensed under the Apache License, Version 2.0 [see LICENSE for details]
-
-
 import torch
 from util.misc import (NestedTensor, nested_tensor_from_tensor_list,
                        accuracy, get_world_size, interpolate,
                        is_dist_avail_and_initialized, inverse_sigmoid)
-# from .DABDETR import sigmoid_focal_loss
 from util import box_ops
 import torch.nn.functional as F
 
 
 def prepare_for_cdn(dn_args, training, num_queries, num_classes, hidden_dim, label_enc):
-    """
-        A major difference of DINO from DN-DETR is that the author process pattern embedding pattern embedding in its detector
-        forward function and use learnable tgt embedding, so we change this function a little bit.
-        :param dn_args: targets, dn_number, label_noise_ratio, box_noise_scale
-        :param training: if it is training or inference
-        :param num_queries: number of queires
-        :param num_classes: number of classes
-        :param hidden_dim: transformer hidden dim
-        :param label_enc: encode labels in dn
-        :return:
-        """
     if training:
         targets, dn_number, label_noise_ratio, box_noise_scale = dn_args
-        # positive and negative dn queries
         dn_number = dn_number * 2
         known = [(torch.ones_like(t['labels'])).cuda() for t in targets]
         batch_size = len(known)
@@ -111,9 +88,7 @@ def prepare_for_cdn(dn_args, training, num_queries, num_classes, hidden_dim, lab
 
         tgt_size = pad_size + num_queries
         attn_mask = torch.ones(tgt_size, tgt_size).to('cuda') < 0
-        # match query cannot see the reconstruct
         attn_mask[pad_size:, :pad_size] = True
-        # reconstruct cannot see each other
         for i in range(dn_number):
             if i == 0:
                 attn_mask[single_pad * 2 * i:single_pad * 2 * (i + 1), single_pad * 2 * (i + 1):pad_size] = True
@@ -138,10 +113,6 @@ def prepare_for_cdn(dn_args, training, num_queries, num_classes, hidden_dim, lab
 
 
 def dn_post_process(outputs_class, outputs_coord, dn_meta, aux_loss, _set_aux_loss):
-    """
-        post process of dn after output from the transformer
-        put the dn part in the dn_meta
-    """
     if dn_meta and dn_meta['pad_size'] > 0:
         output_known_class = outputs_class[:, :, :dn_meta['pad_size'], :]
         output_known_coord = outputs_coord[:, :, :dn_meta['pad_size'], :]

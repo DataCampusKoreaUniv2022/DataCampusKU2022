@@ -1,11 +1,3 @@
-# Copyright (c) Meta Platforms, Inc. and affiliates.
-
-# All rights reserved.
-
-# This source code is licensed under the license found in the
-# LICENSE file in the root directory of this source tree.
-
-
 from functools import partial
 import torch
 import torch.nn as nn
@@ -13,24 +5,15 @@ import torch.nn.functional as F
 from timm.models.layers import trunc_normal_, DropPath
 
 from util.misc import NestedTensor
-# from timm.models.registry import register_model
 
 class Block(nn.Module):
-    r""" ConvNeXt Block. There are two equivalent implementations:
-    (1) DwConv -> LayerNorm (channels_first) -> 1x1 Conv -> GELU -> 1x1 Conv; all in (N, C, H, W)
-    (2) DwConv -> Permute to (N, H, W, C); LayerNorm (channels_last) -> Linear -> GELU -> Linear; Permute back
-    We use (2) as we find it slightly faster in PyTorch
-    
-    Args:
-        dim (int): Number of input channels.
-        drop_path (float): Stochastic depth rate. Default: 0.0
-        layer_scale_init_value (float): Init value for Layer Scale. Default: 1e-6.
+    r"""
     """
     def __init__(self, dim, drop_path=0., layer_scale_init_value=1e-6):
         super().__init__()
-        self.dwconv = nn.Conv2d(dim, dim, kernel_size=7, padding=3, groups=dim) # depthwise conv
+        self.dwconv = nn.Conv2d(dim, dim, kernel_size=7, padding=3, groups=dim)
         self.norm = LayerNorm(dim, eps=1e-6)
-        self.pwconv1 = nn.Linear(dim, 4 * dim) # pointwise/1x1 convs, implemented with linear layers
+        self.pwconv1 = nn.Linear(dim, 4 * dim)
         self.act = nn.GELU()
         self.pwconv2 = nn.Linear(4 * dim, dim)
         self.gamma = nn.Parameter(layer_scale_init_value * torch.ones((dim)), 
@@ -53,18 +36,7 @@ class Block(nn.Module):
         return x
 
 class ConvNeXt(nn.Module):
-    r""" ConvNeXt
-        A PyTorch impl of : `A ConvNet for the 2020s`  -
-          https://arxiv.org/pdf/2201.03545.pdf
-
-    Args:
-        in_chans (int): Number of input image channels. Default: 3
-        num_classes (int): Number of classes for classification head. Default: 1000
-        depths (tuple(int)): Number of blocks at each stage. Default: [3, 3, 9, 3]
-        dims (int): Feature dimension at each stage. Default: [96, 192, 384, 768]
-        drop_path_rate (float): Stochastic depth rate. Default: 0.
-        layer_scale_init_value (float): Init value for Layer Scale. Default: 1e-6.
-        head_init_scale (float): Init scaling value for classifier weights and biases. Default: 1.
+    r"""
     """
     def __init__(self, in_chans=3, num_classes=1000, 
                  depths=[3, 3, 9, 3], dims=[96, 192, 384, 768], drop_path_rate=0., 
@@ -74,7 +46,7 @@ class ConvNeXt(nn.Module):
         super().__init__()
         self.dims = dims
 
-        self.downsample_layers = nn.ModuleList() # stem and 3 intermediate downsampling conv layers
+        self.downsample_layers = nn.ModuleList()
         stem = nn.Sequential(
             nn.Conv2d(in_chans, dims[0], kernel_size=4, stride=4),
             LayerNorm(dims[0], eps=1e-6, data_format="channels_first")
@@ -87,7 +59,7 @@ class ConvNeXt(nn.Module):
             )
             self.downsample_layers.append(downsample_layer)
 
-        self.stages = nn.ModuleList() # 4 feature resolution stages, each consisting of multiple residual blocks
+        self.stages = nn.ModuleList()
         dp_rates=[x.item() for x in torch.linspace(0, drop_path_rate, sum(depths))] 
         cur = 0
         for i in range(4):
@@ -106,13 +78,6 @@ class ConvNeXt(nn.Module):
             layer_name = f'norm{i_layer}'
             self.add_module(layer_name, layer)
 
-        # self.norm = nn.LayerNorm(dims[-1], eps=1e-6) # final norm layer
-        # self.head = nn.Linear(dims[-1], num_classes)
-
-        # self.apply(self._init_weights)
-        # self.head.weight.data.mul_(head_init_scale)
-        # self.head.bias.data.mul_(head_init_scale)
-
     def _init_weights(self, m):
         if isinstance(m, (nn.Conv2d, nn.Linear)):
             trunc_normal_(m.weight, std=.02)
@@ -127,19 +92,12 @@ class ConvNeXt(nn.Module):
                 norm_layer = getattr(self, f'norm{i}')
                 x_out = norm_layer(x)
                 outs.append(x_out)
-        # return self.norm(x.mean([-2, -1])) # global average pooling, (N, C, H, W) -> (N, C)
         return tuple(outs)
-
-    # def forward(self, x):
-    #     x = self.forward_features(x)
-    #     return x
-
 
     def forward(self, tensor_list: NestedTensor):
         x = tensor_list.tensors
         outs = self.forward_features(x)
-
-        # collect for nesttensors        
+ 
         outs_dict = {}
         for idx, out_i in enumerate(outs):
             m = tensor_list.mask
@@ -150,10 +108,7 @@ class ConvNeXt(nn.Module):
         return outs_dict
 
 class LayerNorm(nn.Module):
-    r""" LayerNorm that supports two data formats: channels_last (default) or channels_first. 
-    The ordering of the dimensions in the inputs. channels_last corresponds to inputs with 
-    shape (batch_size, height, width, channels) while channels_first corresponds to inputs 
-    with shape (batch_size, channels, height, width).
+    r"""
     """
     def __init__(self, normalized_shape, eps=1e-6, data_format="channels_last"):
         super().__init__()
@@ -185,51 +140,6 @@ model_urls = {
     "convnext_large_22k": "https://dl.fbaipublicfiles.com/convnext/convnext_large_22k_224.pth",
     "convnext_xlarge_22k": "https://dl.fbaipublicfiles.com/convnext/convnext_xlarge_22k_224.pth",
 }
-
-# @register_model
-# def convnext_tiny(pretrained=False, **kwargs):
-#     model = ConvNeXt(depths=[3, 3, 9, 3], dims=[96, 192, 384, 768], **kwargs)
-#     if pretrained:
-#         url = model_urls['convnext_tiny_1k']
-#         checkpoint = torch.hub.load_state_dict_from_url(url=url, map_location="cpu", check_hash=True)
-#         model.load_state_dict(checkpoint["model"])
-#     return model
-
-# @register_model
-# def convnext_small(pretrained=False, **kwargs):
-#     model = ConvNeXt(depths=[3, 3, 27, 3], dims=[96, 192, 384, 768], **kwargs)
-#     if pretrained:
-#         url = model_urls['convnext_small_1k']
-#         checkpoint = torch.hub.load_state_dict_from_url(url=url, map_location="cpu", check_hash=True)
-#         model.load_state_dict(checkpoint["model"])
-#     return model
-
-# @register_model
-# def convnext_base(pretrained=False, in_22k=False, **kwargs):
-#     model = ConvNeXt(depths=[3, 3, 27, 3], dims=[128, 256, 512, 1024], **kwargs)
-#     if pretrained:
-#         url = model_urls['convnext_base_22k'] if in_22k else model_urls['convnext_base_1k']
-#         checkpoint = torch.hub.load_state_dict_from_url(url=url, map_location="cpu", check_hash=True)
-#         model.load_state_dict(checkpoint["model"])
-#     return model
-
-# @register_model
-# def convnext_large(pretrained=False, in_22k=False, **kwargs):
-#     model = ConvNeXt(depths=[3, 3, 27, 3], dims=[192, 384, 768, 1536], **kwargs)
-#     if pretrained:
-#         url = model_urls['convnext_large_22k'] if in_22k else model_urls['convnext_large_1k']
-#         checkpoint = torch.hub.load_state_dict_from_url(url=url, map_location="cpu", check_hash=True)
-#         model.load_state_dict(checkpoint["model"])
-#     return model
-
-# @register_model
-# def convnext_xlarge(pretrained=False, in_22k=False, **kwargs):
-#     model = ConvNeXt(depths=[3, 3, 27, 3], dims=[256, 512, 1024, 2048], **kwargs)
-#     if pretrained:
-#         url = model_urls['convnext_xlarge_22k'] if in_22k else model_urls['convnext_xlarge_1k']
-#         checkpoint = torch.hub.load_state_dict_from_url(url=url, map_location="cpu", check_hash=True)
-#         model.load_state_dict(checkpoint["model"])
-#     return model
 
 def build_convnext(modelname, pretrained,backbone_dir=None, **kw):
     assert modelname in ['convnext_xlarge_22k']

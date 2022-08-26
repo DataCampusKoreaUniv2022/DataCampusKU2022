@@ -1,19 +1,3 @@
-# ------------------------------------------------------------------------
-# DINO
-# Copyright (c) 2022 IDEA. All Rights Reserved.
-# Licensed under the Apache License, Version 2.0 [see LICENSE for details]
-# ------------------------------------------------------------------------
-# Conditional DETR
-# Copyright (c) 2021 Microsoft. All Rights Reserved.
-# Licensed under the Apache License, Version 2.0 [see LICENSE for details]
-# ------------------------------------------------------------------------
-# Copied from DETR (https://github.com/facebookresearch/detr)
-# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-# ------------------------------------------------------------------------
-
-"""
-Backbone modules.
-"""
 from collections import OrderedDict
 import os
 
@@ -34,14 +18,6 @@ from .swin_transformer import build_swin_transformer
 
 
 class FrozenBatchNorm2d(torch.nn.Module):
-    """
-    BatchNorm2d where the batch statistics and the affine parameters are fixed.
-
-    Copy-paste from torchvision.misc.ops with added eps before rqsrt,
-    without which any other models than torchvision.models.resnet[18,34,50,101]
-    produce nans.
-    """
-
     def __init__(self, n):
         super(FrozenBatchNorm2d, self).__init__()
         self.register_buffer("weight", torch.ones(n))
@@ -60,8 +36,6 @@ class FrozenBatchNorm2d(torch.nn.Module):
             missing_keys, unexpected_keys, error_msgs)
 
     def forward(self, x):
-        # move reshapes to the beginning
-        # to make it fuser-friendly
         w = self.weight.reshape(1, -1, 1, 1)
         b = self.bias.reshape(1, -1, 1, 1)
         rv = self.running_var.reshape(1, -1, 1, 1)
@@ -84,13 +58,6 @@ class BackboneBase(nn.Module):
         for idx, layer_index in enumerate(return_interm_indices):
             return_layers.update({"layer{}".format(5 - len(return_interm_indices) + idx): "{}".format(layer_index)})
 
-        # if len:
-        #     if use_stage1_feature:
-        #         return_layers = {"layer1": "0", "layer2": "1", "layer3": "2", "layer4": "3"}
-        #     else:
-        #         return_layers = {"layer2": "0", "layer3": "1", "layer4": "2"}
-        # else:
-        #     return_layers = {'layer4': "0"}
         self.body = IntermediateLayerGetter(backbone, return_layers=return_layers)
         self.num_channels = num_channels
 
@@ -102,12 +69,10 @@ class BackboneBase(nn.Module):
             assert m is not None
             mask = F.interpolate(m[None].float(), size=x.shape[-2:]).to(torch.bool)[0]
             out[name] = NestedTensor(x, mask)
-        # import ipdb; ipdb.set_trace()
         return out
 
 
 class Backbone(BackboneBase):
-    """ResNet backbone with frozen BatchNorm."""
     def __init__(self, name: str,
                  train_backbone: bool,
                  dilation: bool,
@@ -120,7 +85,6 @@ class Backbone(BackboneBase):
                 pretrained=is_main_process(), norm_layer=batch_norm)
         else:
             raise NotImplementedError("Why you can get here with name {}".format(name))
-        # num_channels = 512 if name in ('resnet18', 'resnet34') else 2048
         assert name not in ('resnet18', 'resnet34'), "Only resnet50 and resnet101 are available."
         assert return_interm_indices in [[0,1,2,3], [1,2,3], [3]]
         num_channels_all = [256, 512, 1024, 2048]
@@ -138,23 +102,12 @@ class Joiner(nn.Sequential):
         pos = []
         for name, x in xs.items():
             out.append(x)
-            # position encoding
             pos.append(self[1](x).to(x.tensors.dtype))
 
         return out, pos
 
 
 def build_backbone(args):
-    """
-    Useful args:
-        - backbone: backbone name
-        - lr_backbone: 
-        - dilation
-        - return_interm_indices: available: [0,1,2,3], [1,2,3], [3]
-        - backbone_freeze_keywords: 
-        - use_checkpoint: for swin only for now
-
-    """
     position_embedding = build_position_encoding(args)
     train_backbone = args.lr_backbone > 0
     if not train_backbone:
@@ -176,7 +129,6 @@ def build_backbone(args):
                     out_indices=tuple(return_interm_indices), \
                 dilation=args.dilation, use_checkpoint=use_checkpoint)
 
-        # freeze some layers
         if backbone_freeze_keywords is not None:
             for name, parameter in backbone.named_parameters():
                 for keyword in backbone_freeze_keywords:

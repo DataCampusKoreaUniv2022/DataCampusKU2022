@@ -1,6 +1,3 @@
-# ==========================================================
-# Modified from mmcv
-# ==========================================================
 import os, sys
 import os.path as osp
 import ast
@@ -41,29 +38,6 @@ class ConfigDict(Dict):
 
 
 class SLConfig(object):
-    """
-    config files.
-    only support .py file as config now.
-
-    ref: mmcv.utils.config
-
-    Example:
-        >>> cfg = Config(dict(a=1, b=dict(b1=[0, 1])))
-        >>> cfg.a
-        1
-        >>> cfg.b
-        {'b1': [0, 1]}
-        >>> cfg.b.b1
-        [0, 1]
-        >>> cfg = Config.fromfile('tests/data/config/a.py')
-        >>> cfg.filename
-        "/home/kchen/projects/mmcv/tests/data/config/a.py"
-        >>> cfg.item4
-        'test'
-        >>> cfg
-        "Config [path: /home/kchen/projects/mmcv/tests/data/config/a.py]: "
-        "{'item1': [1, 2], 'item2': {'a': 0}, 'item3': True, 'item4': 'test'}"
-    """
     @staticmethod
     def _validate_py_syntax(filename):
         with open(filename) as f:
@@ -95,9 +69,7 @@ class SLConfig(object):
                     for name, value in mod.__dict__.items()
                     if not name.startswith('__')
                 }
-                # delete imported module
                 del sys.modules[temp_module_name]
-                # close temp file
                 temp_config_file.close()
         elif filename.lower().endswith(('.yml', '.yaml', '.json')):
             from .slio import slload
@@ -109,7 +81,6 @@ class SLConfig(object):
         with open(filename, 'r') as f:
             cfg_text += f.read()
 
-        # parse the base file
         if BASE_KEY in cfg_dict:
             cfg_dir = osp.dirname(filename)
             base_filename = cfg_dict.pop(BASE_KEY)
@@ -127,13 +98,11 @@ class SLConfig(object):
             for c in cfg_dict_list:
                 if len(base_cfg_dict.keys() & c.keys()) > 0:
                     raise KeyError('Duplicate key is not allowed among bases')
-                    # TODO Allow the duplicate key while warnning user
                 base_cfg_dict.update(c)
 
             base_cfg_dict = SLConfig._merge_a_into_b(cfg_dict, base_cfg_dict)
             cfg_dict = base_cfg_dict
 
-            # merge cfg_text
             cfg_text_list.append(cfg_text)
             cfg_text = '\n'.join(cfg_text_list)
 
@@ -141,18 +110,6 @@ class SLConfig(object):
 
     @staticmethod
     def _merge_a_into_b(a, b):
-        """merge dict `a` into dict `b` (non-inplace).
-            values in `a` will overwrite `b`.
-            copy first to avoid inplace modification
-            
-        Args:
-            a ([type]): [description]
-            b ([type]): [description]
-
-        Returns:
-            [dict]: [description]
-        """
-        # import ipdb; ipdb.set_trace()
         if not isinstance(a, dict):
             return a
 
@@ -161,8 +118,6 @@ class SLConfig(object):
             if isinstance(v, dict) and k in b and not v.pop(DELETE_KEY, False):
             
                 if not isinstance(b[k], dict) and not isinstance(b[k], list):
-                    # if :
-                    # import ipdb; ipdb.set_trace()
                     raise TypeError(
                         f'{k}={v} in child config cannot inherit from base '
                         f'because {k} is a dict in the child config but is of '
@@ -250,7 +205,6 @@ class SLConfig(object):
             return attr_str
 
         def _format_list(k, v, use_mapping=False):
-            # check if all items in the list are dict
             if all(isinstance(_, dict) for _ in v):
                 v_str = '[\n'
                 v_str += '\n'.join(
@@ -304,7 +258,6 @@ class SLConfig(object):
 
         cfg_dict = self._cfg_dict.to_dict()
         text = _format_dict(cfg_dict, outest_level=True)
-        # copied from setup.cfg
         yapf_style = dict(
             based_on_style='pep8',
             blank_line_before_nested_class_or_def=True,
@@ -321,15 +274,6 @@ class SLConfig(object):
         return len(self._cfg_dict)
 
     def __getattr__(self, name):
-        # # debug
-        # print('+'*15)
-        # print('name=%s' % name)
-        # print("addr:", id(self))
-        # # print('type(self):', type(self))
-        # print(self.__dict__)
-        # print('+'*15)
-        # if self.__dict__ == {}:
-        #     raise ValueError
 
         return getattr(self._cfg_dict, name)
 
@@ -350,7 +294,6 @@ class SLConfig(object):
         return iter(self._cfg_dict)
 
     def dump(self, file=None):
-        # import ipdb; ipdb.set_trace()
         if file is None:
             return self.pretty_text
         else:
@@ -358,22 +301,6 @@ class SLConfig(object):
                 f.write(self.pretty_text)
 
     def merge_from_dict(self, options):
-        """Merge list into cfg_dict
-
-        Merge the dict parsed by MultipleKVAction into this cfg.
-
-        Examples:
-            >>> options = {'model.backbone.depth': 50,
-            ...            'model.backbone.with_cp':True}
-            >>> cfg = Config(dict(model=dict(backbone=dict(type='ResNet'))))
-            >>> cfg.merge_from_dict(options)
-            >>> cfg_dict = super(Config, self).__getattribute__('_cfg_dict')
-            >>> assert cfg_dict == dict(
-            ...     model=dict(backbone=dict(depth=50, with_cp=True)))
-
-        Args:
-            options (dict): dict of configs to merge from.
-        """
         option_cfg_dict = {}
         for full_key, v in options.items():
             d = option_cfg_dict
@@ -388,7 +315,6 @@ class SLConfig(object):
         super(SLConfig, self).__setattr__(
             '_cfg_dict', SLConfig._merge_a_into_b(option_cfg_dict, cfg_dict))
 
-    # for multiprocess
     def __setstate__(self, state):
         self.__init__(state)
 
@@ -401,12 +327,6 @@ class SLConfig(object):
 
 
 class DictAction(Action):
-    """
-    argparse action to split an argument into KEY=VALUE form
-    on the first = and append to a dictionary. List options should
-    be passed as comma separated values, i.e KEY=V1,V2,V3
-    """
-
     @staticmethod
     def _parse_int_float_bool(val):
         try:

@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-'''
-@File    :   visualizer.py
-@Time    :   2022/04/05 11:39:33
-@Author  :   Shilong Liu 
-@Contact :   liusl20@mail.tsinghua.edu.cn; slongliu86@gmail.com
-Modified from COCO evaluator
-'''
-
 import os, sys
 from textwrap import wrap
 import torch
@@ -22,8 +13,6 @@ from matplotlib import transforms
 
 def renorm(img: torch.FloatTensor, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]) \
         -> torch.FloatTensor:
-    # img: tensor(3,H,W) or tensor(B,3,H,W)
-    # return: same as img
     assert img.dim() == 3 or img.dim() == 4, "img.dim() should be 3 or 4 but %d" % img.dim() 
     if img.dim() == 3:
         assert img.size(0) == 3, 'img.size(0) shoule be 3 but "%d". (%s)' % (img.size(0), str(img.size()))
@@ -32,7 +21,7 @@ def renorm(img: torch.FloatTensor, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224
         std = torch.Tensor(std)
         img_res = img_perm * std + mean
         return img_res.permute(2,0,1)
-    else: # img.dim() == 4
+    else:
         assert img.size(1) == 3, 'img.size(1) shoule be 3 but "%d". (%s)' % (img.size(1), str(img.size()))
         img_perm = img.permute(0,2,3,1)
         mean = torch.Tensor(mean)
@@ -44,8 +33,6 @@ class ColorMap():
     def __init__(self, basergb=[255,255,0]):
         self.basergb = np.array(basergb)
     def __call__(self, attnmap):
-        # attnmap: h, w. np.uint8.
-        # return: h, w, 4. np.uint8.
         assert attnmap.dtype == np.uint8
         h, w = attnmap.shape
         res = self.basergb.copy()
@@ -60,33 +47,17 @@ class COCOVisualizer():
     def __init__(self) -> None:
         pass
 
+    # 이미지 시각화해서 전달
     def visualize(self, img, tgt, caption=None, dpi=100, savedir=None, show_in_console=True, width=1920, height=1080):
-        """
-        img: tensor(3, H, W)
-        tgt: make sure they are all on cpu.
-            must have items: 'image_id', 'boxes', 'size'
-        """
         plt.figure(dpi=dpi, figsize=[width/dpi, height/dpi])
         plt.rcParams['font.size'] = '5'
         ax = plt.gca()
         img = renorm(img).permute(1, 2, 0)
-        # if os.environ.get('IPDB_SHILONG_DEBUG', None) == 'INFO':
-        #     import ipdb; ipdb.set_trace()
         ax.imshow(img)
         plt.axis('off')
         
         self.addtgt(tgt, height)
-        # if show_in_console:
-        #     plt.show()
 
-        # if savedir is not None:
-        #     if caption is None:
-        #         savename = '{}/{}-{}.png'.format(savedir, int(tgt['image_id']), str(datetime.datetime.now()).replace(' ', '-'))
-        #     else:
-        #         savename = '{}/{}-{}-{}.png'.format(savedir, caption, int(tgt['image_id']), str(datetime.datetime.now()).replace(' ', '-'))
-        #     print("savename: {}".format(savename))
-        #     os.makedirs(os.path.dirname(savename), exist_ok=True)
-        #     plt.savefig(savename)
         buf = io.BytesIO()
         plt.savefig(buf, bbox_inches='tight', pad_inches=0)
         buf.seek(0)
@@ -96,11 +67,6 @@ class COCOVisualizer():
         return resultImg
 
     def addtgt(self, tgt, height=1080):
-        """
-        - tgt: dict. args:
-            - boxes: num_boxes, 4. xywh, [0,1].
-            - box_label: num_boxes.
-        """
         assert 'boxes' in tgt
         ax = plt.gca()
         H, W = tgt['size'].tolist() 
@@ -131,7 +97,6 @@ class COCOVisualizer():
             for idx, bl in enumerate(tgt['box_label']):
                 _string = str(bl)
                 bbox_x, bbox_y, bbox_w, bbox_h = boxes[idx]
-                # ax.text(bbox_x, bbox_y, _string, color='black', bbox={'facecolor': 'yellow', 'alpha': 1.0, 'pad': 1})
                 ax.text(bbox_x, bbox_y, _string, fontsize=height/48, color='black', bbox={'facecolor': color[idx], 'alpha': 0.6, 'pad': 1})
 
         if 'caption' in tgt:

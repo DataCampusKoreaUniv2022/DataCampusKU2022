@@ -1,5 +1,3 @@
-# borrow from https://github.com/Zzh-tju/CIoU/blob/master/layers/modules/multibox_loss.py
-
 import torch, math
 
 

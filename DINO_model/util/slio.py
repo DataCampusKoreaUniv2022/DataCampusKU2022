@@ -1,7 +1,3 @@
-# ==========================================================
-# Modified from mmcv
-# ==========================================================
-
 import json, pickle, yaml
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
@@ -10,10 +6,6 @@ except ImportError:
 
 from pathlib import Path
 from abc import ABCMeta, abstractmethod
-
-# ===========================
-# Rigister handler
-# ===========================
 
 class BaseFileHandler(metaclass=ABCMeta):
 
@@ -91,33 +83,11 @@ file_handlers = {
     'pkl': PickleHandler()
 }
 
-# ===========================
-# load and dump
-# ===========================
 
 def is_str(x):
-    """Whether the input is an string instance.
-
-    Note: This method is deprecated since python 2 is no longer supported.
-    """
     return isinstance(x, str)
 
 def slload(file, file_format=None, **kwargs):
-    """Load data from json/yaml/pickle files.
-
-    This method provides a unified api for loading data from serialized files.
-
-    Args:
-        file (str or :obj:`Path` or file-like object): Filename or a file-like
-            object.
-        file_format (str, optional): If not specified, the file format will be
-            inferred from the file extension, otherwise use the specified one.
-            Currently supported formats include "json", "yaml/yml" and
-            "pickle/pkl".
-
-    Returns:
-        The content from the file.
-    """
     if isinstance(file, Path):
         file = str(file)
     if file_format is None and is_str(file):
@@ -136,21 +106,6 @@ def slload(file, file_format=None, **kwargs):
 
 
 def sldump(obj, file=None, file_format=None, **kwargs):
-    """Dump data to json/yaml/pickle strings or files.
-
-    This method provides a unified api for dumping data as strings or to files,
-    and also supports custom arguments for each file format.
-
-    Args:
-        obj (any): The python object to be dumped.
-        file (str or :obj:`Path` or file-like object, optional): If not
-            specified, then the object is dump to a str, otherwise to a file
-            specified by the filename or file-like object.
-        file_format (str, optional): Same as :func:`load`.
-
-    Returns:
-        bool: True for success, False otherwise.
-    """
     if isinstance(file, Path):
         file = str(file)
     if file_format is None:

@@ -23,14 +23,12 @@ def clean_state_dict(state_dict):
     new_state_dict = OrderedDict()
     for k, v in state_dict.items():
         if k[:7] == 'module.':
-            k = k[7:]  # remove `module.`
+            k = k[7:]
         new_state_dict[k] = v
     return new_state_dict
 
 def renorm(img: torch.FloatTensor, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]) \
         -> torch.FloatTensor:
-    # img: tensor(3,H,W) or tensor(B,3,H,W)
-    # return: same as img
     assert img.dim() == 3 or img.dim() == 4, "img.dim() should be 3 or 4 but %d" % img.dim() 
     if img.dim() == 3:
         assert img.size(0) == 3, 'img.size(0) shoule be 3 but "%d". (%s)' % (img.size(0), str(img.size()))
@@ -39,7 +37,7 @@ def renorm(img: torch.FloatTensor, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224
         std = torch.Tensor(std)
         img_res = img_perm * std + mean
         return img_res.permute(2,0,1)
-    else: # img.dim() == 4
+    else:
         assert img.size(1) == 3, 'img.size(1) shoule be 3 but "%d". (%s)' % (img.size(1), str(img.size()))
         img_perm = img.permute(0,2,3,1)
         mean = torch.Tensor(mean)
@@ -75,18 +73,7 @@ def to_device(item, device):
 
 # 
 def get_gaussian_mean(x, axis, other_axis, softmax=True):
-    """
-
-    Args:
-        x (float): Input images(BxCxHxW)
-        axis (int): The index for weighted mean
-        other_axis (int): The other index
-
-    Returns: weighted index for axis, BxC
-
-    """
     mat2line = torch.sum(x, axis=other_axis)
-    # mat2line = mat2line / mat2line.mean() * 10
     if softmax:
         u = torch.softmax(mat2line, axis=2)
     else:
@@ -100,26 +87,11 @@ def get_gaussian_mean(x, axis, other_axis, softmax=True):
     return mean_position
 
 def get_expected_points_from_map(hm, softmax=True):
-    """get_gaussian_map_from_points
-        B,C,H,W -> B,N,2 float(0, 1) float(0, 1)
-        softargmax function
-
-    Args:
-        hm (float): Input images(BxCxHxW)
-
-    Returns: 
-        weighted index for axis, BxCx2. float between 0 and 1.
-
-    """
-    # hm = 10*hm
     B,C,H,W = hm.shape
     y_mean = get_gaussian_mean(hm, 2, 3, softmax=softmax) # B,C
     x_mean = get_gaussian_mean(hm, 3, 2, softmax=softmax) # B,C
-    # return torch.cat((x_mean.unsqueeze(-1), y_mean.unsqueeze(-1)), 2)
     return torch.stack([x_mean, y_mean], dim=2)
 
-# Positional encoding (section 5.1)
-# borrow from nerf
 class Embedder:
     def __init__(self, **kwargs):
         self.kwargs = kwargs
@@ -179,10 +151,6 @@ class APOPMeter():
         self.fn = 0
 
     def update(self, pred, gt):
-        """
-        Input:
-            pred, gt: Tensor()
-        """
         assert pred.shape == gt.shape
         self.tp += torch.logical_and(pred == 1, gt == 1).sum().item()
         self.fp += torch.logical_and(pred == 1, gt == 0).sum().item()
@@ -204,13 +172,6 @@ def inverse_sigmoid(x, eps=1e-5):
 import argparse
 from util.slconfig import SLConfig
 def get_raw_dict(args):
-    """
-    return the dicf contained in args.
-    
-    e.g:
-        >>> with open(path, 'w') as f:
-                json.dump(get_raw_dict(args), f, indent=2)
-    """
     if isinstance(args, argparse.Namespace): 
         return vars(args)   
     elif isinstance(args, dict):
@@ -237,52 +198,14 @@ def stat_tensors(tensor):
 
 
 class NiceRepr:
-    """Inherit from this class and define ``__nice__`` to "nicely" print your
-    objects.
-
-    Defines ``__str__`` and ``__repr__`` in terms of ``__nice__`` function
-    Classes that inherit from :class:`NiceRepr` should redefine ``__nice__``.
-    If the inheriting class has a ``__len__``, method then the default
-    ``__nice__`` method will return its length.
-
-    Example:
-        >>> class Foo(NiceRepr):
-        ...    def __nice__(self):
-        ...        return 'info'
-        >>> foo = Foo()
-        >>> assert str(foo) == '<Foo(info)>'
-        >>> assert repr(foo).startswith('<Foo(info) at ')
-
-    Example:
-        >>> class Bar(NiceRepr):
-        ...    pass
-        >>> bar = Bar()
-        >>> import pytest
-        >>> with pytest.warns(None) as record:
-        >>>     assert 'object at' in str(bar)
-        >>>     assert 'object at' in repr(bar)
-
-    Example:
-        >>> class Baz(NiceRepr):
-        ...    def __len__(self):
-        ...        return 5
-        >>> baz = Baz()
-        >>> assert str(baz) == '<Baz(5)>'
-    """
-
     def __nice__(self):
-        """str: a "nice" summary string describing this module"""
         if hasattr(self, '__len__'):
-            # It is a common pattern for objects to use __len__ in __nice__
-            # As a convenience we define a default __nice__ for these objects
             return str(len(self))
         else:
-            # In all other cases force the subclass to overload __nice__
             raise NotImplementedError(
                 f'Define the __nice__ method for {self.__class__!r}')
 
     def __repr__(self):
-        """str: the string of the module"""
         try:
             nice = self.__nice__()
             classname = self.__class__.__name__
@@ -292,7 +215,6 @@ class NiceRepr:
             return object.__repr__(self)
 
     def __str__(self):
-        """str: the string of the module"""
         try:
             classname = self.__class__.__name__
             nice = self.__nice__()
@@ -304,26 +226,6 @@ class NiceRepr:
 
 
 def ensure_rng(rng=None):
-    """Coerces input into a random number generator.
-
-    If the input is None, then a global random state is returned.
-
-    If the input is a numeric value, then that is used as a seed to construct a
-    random state. Otherwise the input is returned as-is.
-
-    Adapted from [1]_.
-
-    Args:
-        rng (int | numpy.random.RandomState | None):
-            if None, then defaults to the global rng. Otherwise this can be an
-            integer or a RandomState class
-    Returns:
-        (numpy.random.RandomState) : rng -
-            a numpy random number generator
-
-    References:
-        .. [1] https://gitlab.kitware.com/computer-vision/kwarray/blob/master/kwarray/util_random.py#L270  # noqa: E501
-    """
 
     if rng is None:
         rng = np.random.mtrand._rand
@@ -334,24 +236,6 @@ def ensure_rng(rng=None):
     return rng
 
 def random_boxes(num=1, scale=1, rng=None):
-    """Simple version of ``kwimage.Boxes.random``
-
-    Returns:
-        Tensor: shape (n, 4) in x1, y1, x2, y2 format.
-
-    References:
-        https://gitlab.kitware.com/computer-vision/kwimage/blob/master/kwimage/structs/boxes.py#L1390
-
-    Example:
-        >>> num = 3
-        >>> scale = 512
-        >>> rng = 0
-        >>> boxes = random_boxes(num, scale, rng)
-        >>> print(boxes)
-        tensor([[280.9925, 278.9802, 308.6148, 366.1769],
-                [216.9113, 330.6978, 224.0446, 456.5878],
-                [405.3632, 196.3221, 493.3953, 270.7942]])
-    """
     rng = ensure_rng(rng)
 
     tlbr = rng.rand(num, 4).astype(np.float32)
@@ -373,14 +257,12 @@ def random_boxes(num=1, scale=1, rng=None):
 class ModelEma(torch.nn.Module):
     def __init__(self, model, decay=0.9997, device=None):
         super(ModelEma, self).__init__()
-        # make a copy of the model for accumulating moving average of weights
         self.module = deepcopy(model)
         self.module.eval()
 
-        # import ipdb; ipdb.set_trace()
 
         self.decay = decay
-        self.device = device  # perform ema on different device from model if set
+        self.device = device
         if self.device is not None:
             self.module.to(device=device)
 
@@ -442,9 +324,6 @@ class BestMetricHolder():
     
 
     def update(self, new_res, epoch, is_ema=False):
-        """
-        return if the results is the best.
-        """
         if not self.use_ema:
             return self.best_all.update(new_res, epoch)
         else:

@@ -16,7 +16,7 @@ lr_drop = 11
 save_checkpoint_interval = 1
 clip_max_norm = 0.1
 onecyclelr = False
-multi_step_lr = False
+multi_step_lr = True
 lr_drop_list = [33, 45]
 
 

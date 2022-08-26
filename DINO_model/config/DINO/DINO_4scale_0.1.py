@@ -2,7 +2,7 @@ _base_ = ['coco_transformer.py']
 
 num_classes=91
 
-lr = 0.0001
+lr = 0.1
 param_dict_type = 'default'
 lr_backbone = 1e-05
 lr_backbone_names = ['backbone.0']
@@ -22,8 +22,8 @@ lr_drop_list = [33, 45]
 
 modelname = 'dino'
 frozen_weights = None
-backbone = 'swin_L_384_22k'
-use_checkpoint = True
+backbone = 'resnet50'
+use_checkpoint = False
 
 dilation = False
 position_embedding = 'sine'
@@ -110,3 +110,4 @@ ema_decay = 0.9997
 ema_epoch = 0
 
 use_detached_boxes_dec_out = False
+

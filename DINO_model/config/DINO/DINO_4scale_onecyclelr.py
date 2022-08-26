@@ -15,15 +15,15 @@ epochs = 12
 lr_drop = 11
 save_checkpoint_interval = 1
 clip_max_norm = 0.1
-onecyclelr = False
+onecyclelr = True
 multi_step_lr = False
 lr_drop_list = [33, 45]
 
 
 modelname = 'dino'
 frozen_weights = None
-backbone = 'swin_L_384_22k'
-use_checkpoint = True
+backbone = 'resnet50'
+use_checkpoint = False
 
 dilation = False
 position_embedding = 'sine'
@@ -110,3 +110,4 @@ ema_decay = 0.9997
 ema_epoch = 0
 
 use_detached_boxes_dec_out = False
+

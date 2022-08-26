@@ -5,4 +5,4 @@ DINO_model/dinoresult
 DINO_model/imagetest
 *.pyc
 __pycache__/
-DINO_model/image.jpeg
+dino_django/image.jpeg

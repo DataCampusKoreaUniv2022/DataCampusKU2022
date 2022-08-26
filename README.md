@@ -101,7 +101,7 @@ git clone https://github.com/DataCampusKoreaUniv2022/DataCampusKU2022.git
     cd ../../..
     ```
     
-6. 각 학습파일 실행
+6. 각 학습/평가/시각화 파일 실행
 
 ## Django API Server 실행
 

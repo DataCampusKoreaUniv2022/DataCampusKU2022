@@ -1,11 +1,3 @@
-# ------------------------------------------------------------------------------------------------
-# Deformable DETR
-# Copyright (c) 2020 SenseTime. All Rights Reserved.
-# Licensed under the Apache License, Version 2.0 [see LICENSE for details]
-# ------------------------------------------------------------------------------------------------
-# Modified from https://github.com/chengdazhi/Deformable-Convolution-V2-PyTorch/tree/pytorch_1.0.0
-# ------------------------------------------------------------------------------------------------
-
 import os
 import glob
 
@@ -33,7 +25,6 @@ def get_extensions():
     extra_compile_args = {"cxx": []}
     define_macros = []
 
-    # import ipdb; ipdb.set_trace()
 
     if torch.cuda.is_available() and CUDA_HOME is not None:
         extension = CUDAExtension

@@ -54,37 +54,6 @@ function CaptureScreenshot() {
 	canvas.height = player.videoHeight;
 	canvas.getContext('2d').drawImage(player, 0, 0, canvas.width, canvas.height);
 
-	// var downloadLink = document.createElement("a");
-	// downloadLink.download = title;
-
-	// function DownloadBlob(blob) {
-	// 	downloadLink.href = URL.createObjectURL(blob);
-	// 	downloadLink.click();
-	// }
-
-	// async function ClipboardBlob(blob) {
-	// 	const clipboardItemInput = new ClipboardItem({ "image/png": blob });
-	// 	await navigator.clipboard.write([clipboardItemInput]);
-	// }
-
-	// // If clipboard copy is needed generate png (clipboard only supports png)
-	// if (screenshotFunctionality == 1 || screenshotFunctionality == 2) {
-	// 	canvas.toBlob(async function (blob) {
-	// 		await ClipboardBlob(blob);
-	// 		// Also download it if it's needed and it's in the correct format
-	// 		if (screenshotFunctionality == 2 && screenshotFormat === 'png') {
-	// 			DownloadBlob(blob);
-	// 		}
-	// 	}, 'image/png');
-	// }
-
-	// // Create and download image in the selected format if needed
-	// if (screenshotFunctionality == 0 || (screenshotFunctionality == 2 && screenshotFormat !== 'png')) {
-	// 	canvas.toBlob(async function (blob) {
-	// 		DownloadBlob(blob);
-	// 	}, 'image/' + screenshotFormat);
-	// }
-
 	player.pause()
 
 	var imgURL = canvas.toDataURL("image/jpeg", 1.0);
@@ -92,16 +61,12 @@ function CaptureScreenshot() {
 		{type: 'image', image: imgURL},
 		function(response){
 			chrome.storage.local.set({image: response.farewell.image, labels: response.farewell.labels});
-
-			// alert(response.farewell.scores)
 			let newDiv = document.createElement('div');
 			newDiv.id = 'xraydiv';
 
 			let iframeToAdd = document.createElement('iframe');
 			let xrayHtmlUrl = chrome.runtime.getURL('xray/index.html');
 			iframeToAdd.src = xrayHtmlUrl;
-			// let imgToAdd = document.createElement('img');
-			// imgToAdd.src = response.farewell.image;
 
 			let whereToAdd = document.getElementById('primary-inner');
 			let ytpPlayer = document.getElementById('player-container-inner');
@@ -111,10 +76,8 @@ function CaptureScreenshot() {
 			let getHeight = htmlPlayer.style.height;
 			iframeToAdd.style.width = getWidth;
 			iframeToAdd.style.height = getHeight;
-			// iframeToAdd.frameBorder = '0';
 			iframeToAdd.marginWidth = '0';
 			iframeToAdd.marginHeight = '0';
-			// iframeToAdd.scrolling = 'no';
 
 			chrome.storage.local.set({width: getWidth, height: getHeight});
 
@@ -122,13 +85,6 @@ function CaptureScreenshot() {
 			
 			ytpPlayer.style.display = 'none';
 			whereToAdd.prepend(newDiv);
-
-			// setTimeout(() => {
-			// 	alert('짜잔');
-			// 	newDiv.style.display = 'none';
-			// 	ytpPlayer.style.display = '';
-			// }, 3000000);
-
 		}
 	);
 }

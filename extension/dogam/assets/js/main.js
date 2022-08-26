@@ -225,7 +225,7 @@
 				// <img> (which is then hidden). Gives us way more flexibility.
 
 					// Set background.
-						$image.css('background-image', 'url(' + $image_img.attr('src') + ')');
+						// $image.css('background-image', 'url(' + $image_img.attr('src') + ')');
 
 					// Set background position.
 						if (x = $image_img.data('position'))

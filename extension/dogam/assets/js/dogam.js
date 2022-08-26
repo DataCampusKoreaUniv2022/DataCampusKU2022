@@ -21,6 +21,22 @@ chrome.storage.local.get(['labellist'], function(result) {
 
         whereDogamAdded.prepend(dogamToAdd);
     }
+
+    if (labelList.length == 0) {
+        var dummyToAdd = document.createElement("article");
+        dummyToAdd.className = "thumb";
+
+        var dummySquare = document.createElement("a");
+        dummySquare.className = "image";
+        dummySquare.style.backgroundImage = "url('" + "images/fulls/12.jpg" + "')";
+        dummyToAdd.append(dummySquare);
+
+        var dummyLabel = document.createElement("h2");
+        dummyLabel.innerText = "식물을 추가해주세요!"
+        dummyToAdd.append(dummyLabel);
+
+        whereDogamAdded.prepend(dummyToAdd);
+    }
 });
 
 

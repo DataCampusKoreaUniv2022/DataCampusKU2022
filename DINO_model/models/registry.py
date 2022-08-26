@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-# @Author: Yihao Chen
-# @Date:   2021-08-16 16:03:17
-# @Last Modified by:   Shilong Liu
-# @Last Modified time: 2022-01-23 15:26
-# modified from mmcv
-
 import inspect
 from functools import partial
 
@@ -38,10 +31,6 @@ class Registry(object):
         return partial(self.register, module_name=module_name, force=force)
 
     def register(self, module_build_function, module_name=None, force=False):
-        """Register a module build function.
-        Args:
-            module (:obj:`nn.Module`): Module to be registered.
-        """
         if not inspect.isfunction(module_build_function):
             raise TypeError('module_build_function must be a function, but got {}'.format(
                 type(module_build_function)))

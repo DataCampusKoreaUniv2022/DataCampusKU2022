@@ -131,10 +131,10 @@ git clone https://github.com/DataCampusKoreaUniv2022/DataCampusKU2022.git
     `DINO_model/dino_views.py` 수정
     
     ```python
-    model_config_path = "(config 파일 상대경로)"
-    model_checkpoint_path = "(체크포인트 파일 상대경로)"
+    model_config_path = "(config 파일 경로)"
+    model_checkpoint_path = "(체크포인트 파일 경로)"
     
-    with open('(id 클래스 json 파일)') as f:
+    with open('(id 클래스 json 파일 )') as f:
     ```
     
 ---

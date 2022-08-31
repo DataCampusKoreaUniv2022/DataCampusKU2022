@@ -48,7 +48,7 @@ X-Ray는 아마존 프라임 비디오에서 제공하고 있는 서비스로, �
 .
 ├── DINO_model                              # model directory
 │   ├── ckpts                               # checkpoint path
-│   │   └── 20_checkpoint_best_regular.pth  # checkpoint file
+│   │   └── 20_checkpoint_best_regular.pth  # checkpoint file (Download from Google Drive)
 │   ├── config                              # config files
 │   │   └── DINO
 │   │       └── DINO_4scale.py              # Base model config
@@ -81,7 +81,7 @@ X-Ray는 아마존 프라임 비디오에서 제공하고 있는 서비스로, �
 
 ---
 
-# 설치
+# 설치 및 실행
 
 ## 구글 드라이브 링크
 
@@ -113,6 +113,8 @@ X-Ray는 아마존 프라임 비디오에서 제공하고 있는 서비스로, �
     
     https://drive.google.com/drive/folders/11S8LZkAacI19tG6z-kEnQ1tVGC2CMEne?usp=sharing
     
+## Demo in Colab
+https://colab.research.google.com/drive/1MV9UvZX-D8vYHjXTgF5NAz2g0nv_OdNc?usp=sharing
 
 ## 공통
 

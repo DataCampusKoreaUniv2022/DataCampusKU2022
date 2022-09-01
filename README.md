@@ -236,6 +236,10 @@ git clone https://github.com/DataCampusKoreaUniv2022/DataCampusKU2022.git
 
 ![시연영상_AdobeExpress.gif](README%20e4ffc24a345949238559abbf92336495/시연영상_AdobeExpress.gif)
 
+![도감.gif](README%20e4ffc24a345949238559abbf92336495/도감.gif)
+
+---
+
 ![KakaoTalk_Photo_2022-08-26-19-15-10.jpeg](README%20e4ffc24a345949238559abbf92336495/KakaoTalk_Photo_2022-08-26-19-15-10.jpeg)
 
 유튜브 플레이어 하단 조작 바 우측에 식물 X-ray 버튼을 추가하여 실내 식물 영상에서 X-ray를 실행할 수 있도록 했습니다.
@@ -257,8 +261,6 @@ X-ray 버튼을 누르면 서버와 통신하면서 결과 이미지를 받아�
 ![KakaoTalk_Photo_2022-08-26-19-15-23 010.jpeg](README%20e4ffc24a345949238559abbf92336495/KakaoTalk_Photo_2022-08-26-19-15-23_010.jpeg)
 
 구매하기 링크를 누르면 해당 식물의 오늘의집 구매 사이트로 넘어갈 수 있습니다.
-
-![도감.gif](README%20e4ffc24a345949238559abbf92336495/도감.gif)
 
 ![KakaoTalk_Photo_2022-08-26-19-15-22 006.jpeg](README%20e4ffc24a345949238559abbf92336495/KakaoTalk_Photo_2022-08-26-19-15-22_006.jpeg)
 

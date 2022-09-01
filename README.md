@@ -258,6 +258,8 @@ X-ray 버튼을 누르면 서버와 통신하면서 결과 이미지를 받아�
 
 구매하기 링크를 누르면 해당 식물의 오늘의집 구매 사이트로 넘어갈 수 있습니다.
 
+![도감.gif](README%20e4ffc24a345949238559abbf92336495/도감.gif)
+
 ![KakaoTalk_Photo_2022-08-26-19-15-22 006.jpeg](README%20e4ffc24a345949238559abbf92336495/KakaoTalk_Photo_2022-08-26-19-15-22_006.jpeg)
 
 ![KakaoTalk_Photo_2022-08-26-19-15-23 008.jpeg](README%20e4ffc24a345949238559abbf92336495/KakaoTalk_Photo_2022-08-26-19-15-23_008.jpeg)

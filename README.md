@@ -90,6 +90,8 @@ X-Ray는 아마존 프라임 비디오에서 제공하고 있는 서비스로, �
 https://colab.research.google.com/drive/1ZF4lu2UDAMWF_FohwEBI7aNqWlqX_-cv?usp=sharing
 
 ```python
+# 아래 주요 명령어들은 전부 데모 파일 안에 작성되어 있습니다.
+
 # clone github
 !git clone https://github.com/DataCampusKoreaUniv2022/DataCampusKU2022.git
 

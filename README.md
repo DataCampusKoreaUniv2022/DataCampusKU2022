@@ -234,6 +234,8 @@ git clone https://github.com/DataCampusKoreaUniv2022/DataCampusKU2022.git
 
 # 시연 화면
 
+![시연영상_AdobeExpress.gif](README%20e4ffc24a345949238559abbf92336495/시연영상_AdobeExpress.gif)
+
 ![KakaoTalk_Photo_2022-08-26-19-15-10.jpeg](README%20e4ffc24a345949238559abbf92336495/KakaoTalk_Photo_2022-08-26-19-15-10.jpeg)
 
 유튜브 플레이어 하단 조작 바 우측에 식물 X-ray 버튼을 추가하여 실내 식물 영상에서 X-ray를 실행할 수 있도록 했습니다.

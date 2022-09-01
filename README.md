@@ -82,6 +82,27 @@ X-Ray는 아마존 프라임 비디오에서 제공하고 있는 서비스로, �
 ---
 
 # 설치 및 실행
+    
+## Demo in Colab
+
+<a href="https://colab.research.google.com/drive/1ZF4lu2UDAMWF_FohwEBI7aNqWlqX_-cv?usp=sharing"><img src="https://img.shields.io/badge/Demo-blue?style=flat-square&logo=googlecolab&#logoColor=white&link=https://colab.research.google.com/drive/1Zx0zZMmj5Zyuf6RDV4EzPnjmeupha7fS?hl=ko#scrollTo=NfANEW0mu8oN"/></a> 
+
+https://colab.research.google.com/drive/1ZF4lu2UDAMWF_FohwEBI7aNqWlqX_-cv?usp=sharing
+
+```python
+# clone github
+!git clone https://github.com/DataCampusKoreaUniv2022/DataCampusKU2022.git
+
+# Go to dino model folder
+%cd DataCampusKU2022/DINO_model/
+
+# Download weights. If not working, You can try click to download release on this web. 
+!wget https://github.com/DataCampusKoreaUniv2022/DataCampusKU2022/releases/download/v1.0.0/checkpoint_best_regular.pth
+
+# Download and unzip image datasets. If not working, You can try click to download release on this web.
+!wget https://github.com/DataCampusKoreaUniv2022/DataCampusKU2022/releases/download/v1.0.0/dino_data.zip
+!unzip dino_data.zip
+```
 
 ## 구글 드라이브 링크
 
@@ -112,9 +133,7 @@ X-Ray는 아마존 프라임 비디오에서 제공하고 있는 서비스로, �
 - 기타 파일 폴더
     
     https://drive.google.com/drive/folders/11S8LZkAacI19tG6z-kEnQ1tVGC2CMEne?usp=sharing
-    
-## Demo in Colab
-https://colab.research.google.com/drive/1MV9UvZX-D8vYHjXTgF5NAz2g0nv_OdNc?usp=sharing
+
 
 ## 공통
 
